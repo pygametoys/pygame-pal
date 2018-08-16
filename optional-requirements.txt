@@ -1,0 +1,4 @@
+git+https://github.com/pygametoys/pyopl@pyopl-py3#egg=pyopl
+av>=0.4.0
+ptpython
+psyco ; python_version < '2.7' and platform_machine == 'x86' and platform_python_implementation == 'CPython'

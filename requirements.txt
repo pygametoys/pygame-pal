@@ -1,0 +1,14 @@
+pygame >= 1.9.2
+attrs
+configobj
+six
+chardet
+pyaudio
+wcwidth
+wrapt
+mido
+pyperclip
+enum34 ; python_version <= '2.7'
+textwrap3 ; python_version <= '2.7'
+backports.functools_lru_cache ; python_version <= '2.7'
+backports.functools_partialmethod ; python_version <= '2.7'
