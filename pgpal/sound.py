@@ -1,5 +1,4 @@
 # -*- coding: utf8 -*-
-import atexit
 from io import BytesIO
 import sndhdr
 from struct import unpack_from, pack_into
@@ -19,14 +18,13 @@ def adjust_pcm_volume(data):
         fmt, view, 0,
         *(int(round(val * config['volume'] / 100.0)) for val in values)
     )
-    return bytes(data)
+    return bytes(view)
 
 
 class Voice(Thread):
     audio = pyaudio.PyAudio()
-    atexit.register(audio.terminate)
     def __init__(self, index, mkf):
-        Thread.__init__(self)
+        Thread.__init__(self, daemon=True)
         data = mkf.read(index, True)
         if len(data):
             if is_win95:
