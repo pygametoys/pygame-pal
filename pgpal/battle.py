@@ -733,7 +733,6 @@ class BattleFieldMixin(object):
             self.battle.players[i].time_meter = 15.0
             self.battle.players[i].hiding_time = 0
             self.battle.players[i].state = FighterState.Wait
-            self.battle.players[i].action.target = -1
             self.battle.players[i].defending = False
             self.battle.players[i].current_frame = 0
             self.battle.players[i].color_shift = False
@@ -1216,6 +1215,7 @@ class FighterTeamMixin(object):
         ]
         self.battle.moving_player_index = player_index
         self.battle.blow = 0
+        orig_target = player.action.target
         self.battle_player_validate_action(player_index)
         self.battle_backup_stat()
         target = player.action.target
@@ -1616,6 +1616,7 @@ class FighterTeamMixin(object):
         player.state = FighterState.Wait
         player.time_meter = 0.0
         self.battle_post_action_check(False)
+        player.action.target = orig_target
 
     def battle_player_validate_action(self, player_index):
         player = self.battle.players[player_index]

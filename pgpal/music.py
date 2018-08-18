@@ -25,7 +25,7 @@ class Midi(Thread):
             self.port = mido.open_output(name=avail_ports[0])
 
     def load(self, index):
-        if os.path.exists('Musics'):
+        if os.path.exists(os.path.join(config['game_path'], 'Musics')):
             try:
                 name = open('./Musics/%.3d.mid' % index, 'rb')
                 self.midifile = mido.MidiFile(file=name)
@@ -33,7 +33,7 @@ class Midi(Thread):
             except (FileNotFoundError, ValueError):
                 self.midifile = mido.MidiFile()
                 return False
-        elif os.path.exists('midi.mkf'):
+        elif os.path.exists(os.path.join(config['game_path'], 'midi.mkf')):
             data = MKFDecoder('midi.mkf', yj1=False).read(index, True)
             if len(data):
                 name = BytesIO(data)
@@ -144,6 +144,7 @@ class MusicPlayerMixin(object):
                 self.cd = FakeCD(cd)
             elif hasattr(pg, 'cdrom') and pg.cdrom.get_count() > 0:
                 self.cd = pg.cdrom.CD(cd)
+        self.set_volume(config['volume'])
 
     def play_music(self, index=None, loop=True, fade_time=0):
         if index is None:
@@ -193,4 +194,4 @@ class MusicPlayerMixin(object):
 
     def set_volume(self, volume):
         config['volume'] = min(volume, PAL_MAX_VOLUME)
-        pg.mixer.music.set_volume(volume)
+        pg.mixer.music.set_volume(volume / 100.0)
