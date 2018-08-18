@@ -30,7 +30,8 @@ from pgpal.uimisc import (
 
 class InteractiveShell(Thread):
     def __init__(self, game):
-        Thread.__init__(self, daemon=True)
+        Thread.__init__(self)
+        self.daemon = True
         self.game = game
         atexit.register(self.close)
 

@@ -81,7 +81,7 @@ class OPLStream(object):
                 # Resize the buffer for the last bit
                 cur = buf_tail
             self.opl.getSamples(cur)
-            self.stream.write(adjust_pcm_volume(cur))
+            self.stream.write(adjust_pcm_volume(cur, sample_size))
             fill -= synth_size
 
 

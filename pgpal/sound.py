@@ -10,9 +10,9 @@ from pgpal.mkfbase import MKFDecoder, is_win95
 from pgpal import config
 
 
-def adjust_pcm_volume(data):
+def adjust_pcm_volume(data, width=2):
     view = bytearray(data)
-    fmt = '%dh' % (len(data) // 2)
+    fmt = '%d%s' % (len(data) // width, 'Bhi'[width >> 1])
     values = unpack_from(fmt, view)
     pack_into(
         fmt, view, 0,
@@ -24,7 +24,8 @@ def adjust_pcm_volume(data):
 class Voice(Thread):
     audio = pyaudio.PyAudio()
     def __init__(self, index, mkf):
-        Thread.__init__(self, daemon=True)
+        Thread.__init__(self)
+        self.daemon = True
         data = mkf.read(index, True)
         if len(data):
             if is_win95:
@@ -50,8 +51,9 @@ class Voice(Thread):
         if self.wav is not None:
             while not self.audio.get_host_api_count():
                 time.sleep(0.05)
+            sample_width = self.wav.getsampwidth()
             stream = self.audio.open(
-                format=self.audio.get_format_from_width(self.wav.getsampwidth()),
+                format=self.audio.get_format_from_width(sample_width),
                 channels=self.wav.getnchannels(),
                 rate=self.wav.getframerate(),
                 output=True,
@@ -61,7 +63,7 @@ class Voice(Thread):
             data = True
             while data:
                 data = self.wav.readframes(256)
-                stream.write(adjust_pcm_volume(data))
+                stream.write(adjust_pcm_volume(data, sample_width))
             self.wav.close()
             time.sleep(0.05)
             stream.stop_stream()

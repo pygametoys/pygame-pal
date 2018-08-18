@@ -235,18 +235,19 @@ def byte(i):
 
 class ObjectMeta(type):
     """the singleton class factory"""
-
-    def __init__(cls, name, bases, clsdict):
-        cls._instances = dict()
-
-        def __new__(cls, *args, **kwargs):
-            arg_ids = tuple(hash(arg) if hasattr(arg, '__hash__') else id(arg) for arg in args)
-            if arg_ids not in cls._instances:
-                cls._instances[arg_ids] = Object.__new__(cls)
-                cls._instances[arg_ids].__init__(*args, **kwargs)
-            return cls._instances[arg_ids]
-        clsdict['__new__'] = __new__
-
+    
+    def __call__(cls, *args, **kwargs):
+        if not hasattr(cls, '_instances'):
+            cls._instances = dict()
+        arg_ids = tuple(
+            hash(arg)
+            if type(arg) in {int, float, tuple, str, bytes}
+            else id(arg) for arg in args
+        )
+        if arg_ids not in cls._instances:
+            cls._instances[arg_ids] = Object.__new__(cls)
+            cls._instances[arg_ids].__init__(*args, **kwargs)
+        return cls._instances[arg_ids]
 
 singleton = add_metaclass(ObjectMeta)
 
@@ -285,4 +286,3 @@ def static_vars(**func_dict):
             wrapped.__dict__.update(func_dict)
         return wrapped(*args, **kwargs)
     return wrapper
-

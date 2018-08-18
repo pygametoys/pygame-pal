@@ -19,7 +19,7 @@ def calc_shadow_color(source_color):
     return (source_color & 0xf0) | (source_color & 0x0f) >> 1
 
 
-class RLEDecoder(Object):
+class RLEDecoder(object):
 
     """
     RLE图片解析
