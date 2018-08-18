@@ -30,7 +30,7 @@ from pgpal.uimisc import (
 
 class InteractiveShell(Thread):
     def __init__(self, game):
-        Thread.__init__(self)
+        Thread.__init__(self, daemon=True)
         self.game = game
         atexit.register(self.close)
 
@@ -80,7 +80,6 @@ class ChinesePaladin(
             parent_class.__init__(self)
         if config['show_console']:
             self.console_thread = InteractiveShell(self)
-            self.console_thread.setDaemon(True)
             self.console_thread.start()
 
     def delay(self, ms):
