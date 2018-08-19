@@ -2,19 +2,26 @@ try:
     from setuptools import setup, Extension
 except ImportError:
     from distutils.core import setup, Extension
-from Cython.Distutils import build_ext
 
-ext_modules=[
-    Extension("pgpal._yj1",
-              sources=["yj1backend/_yj1.pyx"],
-    )
-]
+try:
+    from Cython.Distutils import build_ext
+
+    ext_modules=[
+        Extension("pgpal._yj1",
+                sources=["yj1backend/_yj1.pyx"],
+        )
+    ]
+    ext_kwargs = dict(
+        cmdclass={'build_ext': build_ext},
+        ext_modules = ext_modules
+    }
+except ImportError:
+    ext_kwargs = {}
 
 setup(
     name="PyGame-Pal",
     description="A pygame-based open-source re-implemention of the classic Chinese RPG game 'Chinese Paladin'",
     license="GPLv3",
-    cmdclass={'build_ext': build_ext},
     install_requires=[
         'cython'
         'pygame',
@@ -34,12 +41,13 @@ setup(
     extras_require={
         'rix': ['pyopl'],
         'video': ['pyav >= 0.4.0'],
-        'speedup': ["payco ; python_version < '2.7' and platform_machine == 'x86' and platform_python_implementation == 'CPython'"]
+        'console': ['ptpython'],
+        'speedup': ["psyco ; python_version < '2.7' and platform_machine == 'x86' and platform_python_implementation == 'CPython'"]
     },
     packages=['pgpal',
               'pgpal.configpage'],
     package_dir={'pgpal': 'pgpal',
                  'pgpal.configpage': 'pgpal/configpage'},
     scripts=['pygame-pal.py', 'pgpal-config.py'],
-    ext_modules = ext_modules,
+    **ext_kwargs
 )

@@ -9,6 +9,15 @@ import wrapt
 from pgpal.compat import range
 
 
+def hashable(obj):
+    return hasattr(obj, '__hash__') and hasattr(obj, '__eq__') and (
+        hasattr(obj, '__lt__') or
+        hasattr(obj, '__gt__') or
+        hasattr(obj, '__le__') or
+        hasattr(obj, '__ge__')
+    )
+
+
 @attr.s
 class Pointer(object):
     obj = attr.ib()
@@ -240,8 +249,7 @@ class ObjectMeta(type):
         if not hasattr(cls, '_instances'):
             cls._instances = dict()
         arg_ids = tuple(
-            hash(arg)
-            if type(arg) in {int, float, tuple, str, bytes}
+            hash(arg) if hashable(arg)
             else id(arg) for arg in args
         )
         if arg_ids not in cls._instances:
