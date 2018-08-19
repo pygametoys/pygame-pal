@@ -14,7 +14,7 @@ try:
     ext_kwargs = dict(
         cmdclass={'build_ext': build_ext},
         ext_modules = ext_modules
-    }
+    )
 except ImportError:
     ext_kwargs = {}
 
