@@ -16,8 +16,8 @@ __all__ = ['Rix']
 
 
 class ADDT:
-    def __init__(me):
-        me.v = [0x0] * 14
+    def __init__(self):
+        self.v = [0x0] * 14
 
 
 # Playback frequency.  Try a different value if the output sounds stuttery.

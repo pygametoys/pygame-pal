@@ -2200,7 +2200,7 @@ class FighterTeamMixin(object):
             self.battle.enemies[i].e.health > 0
         ):
             return i
-        i = begin
+        i = max(begin, 0)
         for _ in range(MAX_ENEMIES_IN_TEAM):
             if (
                 self.battle.enemies[i].object_id != 0 and

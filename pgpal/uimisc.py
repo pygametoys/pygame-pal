@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 # -*- coding: utf8 -*-
-from functools import partial
 import random
 import attr
 from pgpal import config
@@ -48,12 +47,41 @@ class UIMixin(object):
             STATUS_LABEL_ATTACKPOWER, STATUS_LABEL_MAGICPOWER, STATUS_LABEL_RESISTANCE,
             STATUS_LABEL_DEXTERITY, STATUS_LABEL_FLEERATE
         ]
-        buf_background = partial(self.fbp.render, STATUS_BACKGROUND_FBPNUM)
+        buf_background = self.create_compatible_surface(self.screen)
+        self.fbp.render(STATUS_BACKGROUND_FBPNUM, buf_background)
+        if self.use_custom_screen_layout:
+            pxarray = pg.PixelArray(buf_background)
+            buf_image_box = [None] * 49
+            for i in range(49):
+                buf_image_box[i] = list(pxarray[247: 247 + 50, i + 39])
+            for i in range(49):
+                pxarray[81: 81 + 50, i + 125] = pxarray[81 - 50: 81, i + 125]
+                pxarray[141: 141 + 50, i + 141] = pxarray[81 - 50: 81, i + 141]
+                pxarray[201: 201 + 50, i + 133] = pxarray[81 - 50: 81, i + 133]
+                pxarray[251: 251 + 50, i + 101] = pxarray[81 - 50: 81, i + 101]
+                pxarray[247: 247 + 50, i + 39] = pxarray[189 - 50: 189, i + 39]
+                if i > 0:
+                    pxarray[189: 189 + 50, i - 1] = pxarray[189 - 50: 189, i - 1]
+            for i in range(MAX_PLAYER_EQUIPMENTS):
+                x, y = self.screen_layout.role_equip_image_boxes[i]
+                sx = -x if x < 0 else 0
+                sy = -y if y < 0 else 0
+                d = max(x - 270, 0)
+                if sx >= 50 or sy >= 49 or x >= 320 or y >= 200:
+                    continue
+                while sy < 49 and y + sy < 200:
+                    pxarray[x + sx: x + sx + 50 - sx - d, y + sy] = (
+                        buf_image_box[sy][sx: sx + 50 - sx - d]
+                    )
+                    sy += 1
+            del buf_image_box
+            del pxarray
+            buf_background.unlock()
         current = 0
 
         while 0 <= current <= self.max_party_member_index:
             player_role = self.party[current].player_role
-            buf_background(self.screen)
+            self.blit(buf_background, (0, 0))
             head_icon = self.rgm[self.player_roles.avatar[player_role]]
             if head_icon is not None:
                 head_icon.blit_to(self.screen, self.screen_layout.role_image)
@@ -395,19 +423,57 @@ class ItemMenuMixin(object):
 
     def equip_item_menu(self, item):
         self.last_unequipped_item = item
-        buf_background = partial(self.fbp.render, EQUIPMENU_BACKGROUND_FBPNUM)
+        buf_background = self.create_compatible_surface(self.screen)
+        self.fbp.render(EQUIPMENU_BACKGROUND_FBPNUM, buf_background)
+        if self.use_custom_screen_layout:
+            pxarray = pg.PixelArray(buf_background)
+            x, y = self.screen_layout.equip_image_box
+            for i in range(8, 72):
+                pxarray[92: 92 + 32, i] = pxarray[92: 92 + 32, i + 128]
+                pxarray[92: 92 + 32, i + 64] = pxarray[92: 92 + 32, i + 128]
+            for i in range(9, 90):
+                pxarray[226: 226 + 32, i] = pxarray[226: 226 + 32, i + 104]
+            for i in range(99, 113):
+                pxarray[226: 226 + 32, i] = pxarray[226: 226 + 32, i + 16]
+            for i in range(8, 80):
+                pxarray[x: x + 72, i + y - 8], pxarray[8: 8 + 72, i] = pxarray[8: 8 + 72, i], pxarray[8: 8 + 72, i + 72]
+            del pxarray
+            buf_background.unlock()
         current_player = 0
         selected_color = MENUITEM_COLOR_SELECTED_FIRST
         color_change_time = pg.time.get_ticks() + 600 // MENUITEM_COLOR_SELECTED_TOTALNUM
         while True:
             item = self.last_unequipped_item
-            buf_background(self.screen)
+            self.blit(buf_background, (0, 0))
             buf_image = self.ball[self.objects[item].item.bitmap]
             if buf_image is not None:
                 buf_image.blit_to(
                     self.screen,
                     pal_xy_offset(self.screen_layout.equip_image_box, 8, 8)
                 )
+            if self.use_custom_screen_layout:
+                labels1 = [
+                    STATUS_LABEL_ATTACKPOWER, STATUS_LABEL_MAGICPOWER, STATUS_LABEL_RESISTANCE, STATUS_LABEL_DEXTERITY, STATUS_LABEL_FLEERATE
+                ]
+                labels2 = [
+                    EQUIP_LABEL_HEAD, EQUIP_LABEL_SHOULDER, EQUIP_LABEL_BODY, EQUIP_LABEL_HAND, EQUIP_LABEL_FOOT, EQUIP_LABEL_NECK
+                ]
+                for i, label in enumerate(labels1):
+                    flag = self.screen_layout.equip_status_labels[i][2]
+                    shadow = not (flag & 2)
+                    use_8x8_font = flag & 1
+                    self.draw_text(
+                        self.words[label], self.screen_layout.equip_status_labels[i],
+                        MENUITEM_COLOR, shadow, use_8x8_font
+                    )
+                for i, label in enumerate(labels2):
+                    flag = self.screen_layout.equip_labels[i][2]
+                    shadow = not (flag & 2)
+                    use_8x8_font = flag & 1
+                    self.draw_text(
+                        self.words[label], self.screen_layout.equip_labels[i],
+                        MENUITEM_COLOR, shadow, use_8x8_font
+                    )
             w = self.party[current_player].player_role
             for i in range(MAX_PLAYER_EQUIPMENTS):
                 if self.player_roles.equipment[i][w] != 0:
@@ -2022,7 +2088,7 @@ class UIBattleMixin(object):
             for i in range(self.max_party_member_index + 1):
                 w = self.party[i].player_role
                 if (
-                    self.player_roles.hp[w] < self.player_roles.max_hp[w] // 5 or
+                    self.is_player_dying(w) or
                     self.player_status[w][Status.Sleep] != 0 or
                     self.player_status[w][Status.Confused] != 0 or
                     self.player_status[w][Status.Silence] != 0

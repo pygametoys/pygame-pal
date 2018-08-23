@@ -2,7 +2,6 @@
 from pgpal.mkfext import SSS, Data, GOPS
 from pgpal.const import *
 from pgpal.mkfbase import is_win95
-from pgpal.text import Msg
 from pgpal.utils import Structure, WORD, SHORT, read_by_struct
 
 
@@ -169,7 +168,6 @@ class ResourceManagerMixin(object):
         self.event_object_sprites = None
         self.event_object_num = 0
         self.player_sprites = [None] * (MAX_PLAYERS_IN_PARTY + 1)
-        self.msgs = Msg()
         self.gops = GOPS()
         self.sss = SSS()
         self.data = Data()

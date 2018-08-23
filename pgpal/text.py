@@ -1,13 +1,16 @@
 #! /usr/bin/env python
 # -*- coding: utf8 -*-
 import base64
+from collections import defaultdict
 import copy
+from io import BytesIO
 import math
 import re
 import struct
 import sys
 
 import chardet
+from configobj import ConfigObj
 import wcwidth
 from pygame import freetype
 
@@ -19,10 +22,9 @@ from pgpal import config
 
 
 encoding = None
-if config['use_iso_font']:
-    iso_font = bytearray(
-        base64.b64decode(
-    b'''\
+iso_font = bytearray(
+    base64.b64decode(
+b'''\
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 \nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 AAAAA\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
@@ -59,8 +61,8 @@ g\nAAAAAAA7ZwMDAwMDAAAAAAAAAAA+Yw44YGM+AAAAAAAADAw+DAwMDAw4AAAAAAAAAABjY2
 NjY3Nu\nAAAAAAAAAABjYzY2HBwIAAAAAAAAAABja2trPjY2AAAAAAAAAABjNhwcHDZjAAAAA
 AAAAABjYzY2\nHBwMDAYDAAAAAAB/YDAYDAZ/AAAAAABwGBgYGA4YGBgYcAAAABgYGBgYGBgY
 GBgYGAAAAAAOGBgY\nGHAYGBgYDgAAAAAAAAAAbjsAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'''
-        )
     )
+)
 
 if config['use_embedded_font']:
     with open('wor16.fon', 'rb') as f:
@@ -100,13 +102,13 @@ class Word(Object):
         global encoding
         if encoding is None:
             encoding = chardet.detect(self.data)['encoding']
-            if encoding.lower() == 'gb2312':
+            if encoding.lower() in {'gb2312', 'iso-8859-1'}:
                 encoding = 'gbk'
         self.init_fonts()
 
     def init_fonts(self):
         if config['use_embedded_font']:
-            global char_data, encoding
+            global char_data
             with open('wor16.asc', 'rb') as f:
                 content = f.read()
                 char_data = content.decode(encoding, 'replace')
@@ -121,19 +123,56 @@ class Word(Object):
 class Msg(Object):
     def __init__(self):
         self.indexes = SSS().read(3)
-        msg_file = config['msg_file'] or 'm.msg'
+        msg_file = 'm.msg'
         with open(msg_file, 'rb') as f:
             self.msg = f.read()
 
     def __getitem__(self, msgid):
         begin, end = struct.unpack_from('2I', self.indexes, msgid * 4)
-        return self.msg[begin: end].decode('utf-8' if config['msg_file'] else encoding, 'replace')
+        return self.msg[begin: end].decode(encoding, 'replace')
 
 
 class TextPrinterMixin(object):
     def __init__(self):
         self.word_length = 10
-        self.words = Word(self.word_length)
+        if config['msg_file']:
+            with open(config['msg_file'], 'rb') as f:
+                content = f.read()
+                cfg_content, msg_content = content.split(b'\n[BEGIN MESSAGE]', 1)
+                msg_content = b'[BEGIN MESSAGE]' + msg_content
+                cfg = ConfigObj(BytesIO(cfg_content), encoding='utf-8')
+                if cfg['BEGIN SETTING']['UseISOFont']:
+                    config['use_iso_font'] = True
+                self.words = {int(i): word for i, word in cfg['BEGIN WORDS'].items()}
+                self.msgs = []
+                self.msg_index = {}
+                for sid, block, eid in re.findall(u'\[BEGIN MESSAGE\] (\d+)([\s\S]+?)\[END MESSAGE\] (\d+)', msg_content.decode('utf-8'), re.UNICODE):
+                    item = int(sid)
+                    self.msg_index[item] = []
+                    for line in block.strip().splitlines():
+                        if line != '[CLEAR MESSAGE]':
+                            self.msg_index[item].append(len(self.msgs))
+                            self.msgs.append(line)
+                        else:
+                            self.msg_index[item].append(0)
+                offset = 1
+                for slot in self.screen_layout.__slots__:
+                    attr = getattr(self.screen_layout, slot)
+                    if isinstance(attr, list):
+                        for i in range(len(attr)):
+                            attr[i] = tuple(int(x) for x in cfg['BEGIN LAYOUT'][str(offset)])
+                            offset += 1
+                    elif isinstance(attr, tuple):
+                        item = tuple(int(x) for x in cfg['BEGIN LAYOUT'][str(offset)])
+                        setattr(self.screen_layout, slot, item)
+                        offset += 1
+                    if offset == 75:
+                        offset = 81
+                self.use_custom_screen_layout = True
+        else:
+            self.words = Word(self.word_length)
+            self.msgs = Msg()
+            self.use_custom_screen_layout = False
         self.delay_time = 3
         self.updated_in_battle = False
         self.current_dialog_line_num = 0
@@ -200,6 +239,11 @@ class TextPrinterMixin(object):
             num //= 10
 
     def draw_text(self, text, pos, color, shadow, update):
+        if len(pos) > 2:
+            use_8x8_font = pos[2]
+            pos = pos[:2]
+        else:
+            use_8x8_font = False
         x, y = pos
         urect = pg.Rect(pos, (0, 16 + shadow))
         if x > 320:
@@ -207,12 +251,12 @@ class TextPrinterMixin(object):
         for char in text:
             if shadow:
                 self.draw_char_on_surface(
-                    char, (x + 1, y + 1), 0
+                    char, (x + 1, y + 1), 0, use_8x8_font
                 )
                 self.draw_char_on_surface(
-                    char, (x + 1, y), 0
+                    char, (x + 1, y), 0, use_8x8_font
                 )
-            self.draw_char_on_surface(char, (x, y), color)
+            self.draw_char_on_surface(char, (x, y), color, use_8x8_font)
             char_width = get_char_width(char)
             x += char_width
             urect.w += char_width
@@ -379,7 +423,7 @@ class TextPrinterMixin(object):
                 else:
                     self.current_font_color = FONT_COLOR_CYAN
                 i += 1
-            elif char == "'":
+            elif char == "'" and False:
                 if self.current_font_color == FONT_COLOR_RED:
                     self.current_font_color = FONT_COLOR_DEFAULT
                 else:
@@ -484,7 +528,7 @@ class TextPrinterMixin(object):
         self.draw_number(cash, 6, (49, 14), NumColor.Yellow, NumAlign.Right)
         return box
 
-    def draw_char_on_surface(self, char, pos, color, surface=None):
+    def draw_char_on_surface(self, char, pos, color, use_8x8_font, surface=None):
         if surface is None:
             surface = self.screen
         x, y = pos
@@ -501,22 +545,9 @@ class TextPrinterMixin(object):
                                 surface.set_at((dx, y), color)
                             dx += 1
                         y += i & 1
-            else:
-                surf, rect = unicode_font.render(char)
-                pxarray = pg.PixelArray(surf)
-                if rect.w < 8:
-                    x += 2
-                    y += 15 - rect.h
-                else:
-                    x += (15 - rect.w) // 2
-                    y += (15 - rect.h) // 2
-                for i in range(rect.w):
-                    for j in range(rect.h):
-                        has_color = pxarray[i, j]
-                        if has_color:
-                            surface.set_at((x + i + 1, y + j + 1), color)
+                return
         else:
-            if config['use_iso_font']:
+            if config['use_iso_font'] and use_8x8_font:
                 char_ptr = (ord(char) & 0x7f) * 15
                 for i in range(15):
                     dx = x
@@ -524,16 +555,24 @@ class TextPrinterMixin(object):
                     for j in range(8):
                         if char_byte & (1 << j):
                             surface.set_at((dx, y), color)
-                            surface.set_at((dx, y + 1), color)
                         dx += 1
-                    y += (i & 1) * 2
-            else:
-                surf, rect = unicode_font.render(char)
-                pxarray = pg.PixelArray(surf)
-                x += (8 - rect.w) // 2
-                y += (15 - rect.h) // 2
-                for i in range(rect.w):
-                    for j in range(rect.h):
-                        has_color = pxarray[i, j]
-                        if has_color:
-                            surface.set_at((x + i + 1, y + j + 1), color)
+                    y += (i & 1)
+                return
+        surf, rect = unicode_font.render(char)
+        if use_8x8_font:
+            rect.y += rect.y % 2
+            rect.y //= 2
+            rect.h += rect.h % 2
+            rect.h //= 2
+            surf = pg.transform.scale(surf, rect.size)
+        pxarray = pg.PixelArray(surf)
+        x += rect.x
+        if use_8x8_font:
+            y += 5 - rect.y
+        else:
+            y += 12 - rect.y
+        for i in range(rect.w):
+            for j in range(rect.h):
+                has_color = pxarray[i, j]
+                if has_color:
+                    surface.set_at((x + i + 1, y + j + 1), color)

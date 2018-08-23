@@ -1441,11 +1441,25 @@ class AutoScriptContext(object):
                 self.event_object_id & PAL_ITEM_DESC_BOTTOM else 3
             )
             desc_line = self.event_object_id & ~PAL_ITEM_DESC_BOTTOM
-            self.game.draw_text(
-                self.game.msgs[args[0]], (x_base, desc_line * 16 + y_base),
-                DESCTEXT_COLOR, True, False
-            )
-        self.script_entry += 1
+            if config['msg_file']:
+                group = self.game.msg_index[args[0]]
+                for msg in group:
+                    if msg > 0:
+                        self.game.draw_text(
+                            self.game.msgs[msg], (x_base, desc_line * 16 + y_base),
+                            DESCTEXT_COLOR, True, False
+                        )
+                        desc_line += 1
+                while self.game.scripts[self.script_entry].op == 0xFFFF:
+                    self.script_entry += 1
+            else:
+                self.game.draw_text(
+                    self.game.msgs[args[0]], (x_base, desc_line * 16 + y_base),
+                    DESCTEXT_COLOR, True, False
+                )
+                self.script_entry += 1
+        else:
+            self.script_entry += 1
     commands[0xffff] = show_desc
 
 
@@ -1639,8 +1653,22 @@ class TriggerScriptContext(object):
     commands[0x8e] = restore_screen
 
     def dlg_text(self, *args):
-        self.game.show_dialog_text(self.game.msgs[args[0]])
-        self.script_entry += 1
+        if config['msg_file']:
+            group = self.game.msg_index[args[0]]
+            for msg in group:
+                if msg == 0:
+                    self.restore_screen()
+                    self.script_entry -= 1
+                else:
+                    self.game.show_dialog_text(self.game.msgs[msg])
+            if self.game.scripts[self.script_entry + 1].op == 0xFFFF and self.game.scripts[self.script_entry + 1].p1 != args[0] + 1:
+                self.script_entry += 1
+            else:
+               while self.game.scripts[self.script_entry].op in {0xFFFF, 0x008E}:
+                   self.script_entry += 1
+        else:
+            self.game.show_dialog_text(self.game.msgs[args[0]])
+            self.script_entry += 1
     commands[0xffff] = dlg_text
 
 

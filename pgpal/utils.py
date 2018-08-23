@@ -145,7 +145,6 @@ class StructureMeta(type):
                 raise AttributeError('%s instance has no attribute %s' % (
                     repr(type(self).__name__), repr(index)))
         fields = getattr(self, '_fields_', [])
-        byte_order = ''
         offset = 0
         for format, fieldname in fields:
             fieldname = str(fieldname)
@@ -162,6 +161,8 @@ class StructureMeta(type):
                 if format.startswith(('<', '>', '!', '@')):
                     byte_order = format[0]
                     format = format[1:]
+                else:
+                    byte_order = ''
                 format = byte_order + format
                 setattr(self, fieldname, StructField(format, offset))
                 offset += struct.calcsize(format)
@@ -187,7 +188,6 @@ class Union(StructureMeta):
     def __init__(self, clsname, bases, clsdict):
         StructureMeta.__init__(self, clsname, bases, clsdict)
         opt_fields = getattr(self, '_opt_fields_', [])
-        byte_order = ''
         offset = 0
         for format, fieldname in opt_fields:
             fieldname = str(fieldname)
@@ -201,6 +201,8 @@ class Union(StructureMeta):
                 if format.startswith(('<', '>', '!', '@')):
                     byte_order = format[0]
                     format = format[1:]
+                else:
+                    byte_order = ''
                 format = byte_order + format
                 setattr(self, fieldname, StructField(format, offset))
 
@@ -213,11 +215,13 @@ class Structure(object):
 
     def __init__(self, bytedata):
         if bytedata is None:
-            bytedata = b'\x00' * self.struct_size
-        if isinstance(bytedata, memoryview):
-            self._buffer = bytedata[:self.struct_size]
+            bytedata = self.struct_size
         else:
-            self._buffer = memoryview(bytearray(bytedata[:self.struct_size]))
+            bytedata = bytedata[:self.struct_size]
+        if isinstance(bytedata, memoryview):
+            self._buffer = bytedata
+        else:
+            self._buffer = memoryview(bytearray(bytedata))
 
     @classmethod
     def from_file(cls, f):
