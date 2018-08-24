@@ -1,11 +1,8 @@
 #! /usr/bin/env python
 # -*- coding: utf8 -*-
 import struct
-import gc
-import traceback
 from random import randrange
 from pgpal.game import *
-
 
 class Crane(pg.sprite.DirtySprite):
 
@@ -28,18 +25,16 @@ class Crane(pg.sprite.DirtySprite):
             self.kill()
 
 
-def run(game):
+def run():
     try:
+        game = ChinesePaladin()
         trademark_screen(game)
         splash_screen(game)
         main_game(game)
     except SystemExit:
         pass
     except:
-        traceback.print_exc()
-    finally:
-        game.shutdown(0)
-
+        error_box(traceback.format_exc(limit=1))
 
 def trademark_screen(game):
     if game.play_video('1.AVI'):
@@ -159,8 +154,7 @@ def main():
         except ImportError:
             pass
     pg.init()
-    game = ChinesePaladin()
-    run(game)
+    run()
 
 
 if __name__ == '__main__':

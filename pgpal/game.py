@@ -3,8 +3,9 @@
 import atexit
 import sys
 from threading import Thread
+import traceback
 from pgpal import config
-from pgpal.compat import pg, range
+from pgpal.compat import pg, range, error_box
 from pgpal.const import *
 from pgpal.utils import pal_x, pal_y, RunResult
 from pgpal.battle import BattleFieldMixin, FighterTeamMixin
@@ -50,7 +51,8 @@ class InteractiveShell(Thread):
             import termios
             fd = sys.stdout.fileno()
             attrs = termios.tcgetattr(fd)
-            attrs[0] |= termios.ICRNL
+            attrs[0] |= (termios.ICRNL | termios.IXON | termios.IXOFF)
+            attrs[3] |= (termios.ECHO | termios.ISIG | termios.ICANON)
             termios.tcsetattr(fd, termios.TCSANOW, attrs)
         except ImportError:
             pass
@@ -77,11 +79,15 @@ class ChinesePaladin(
     UIMenuMixin,
 ):
     def __init__(self):
-        for parent_class in self.__class__.__mro__[1:]:
-            parent_class.__init__(self)
-        if config['show_console']:
-            self.console_thread = InteractiveShell(self)
-            self.console_thread.start()
+        try:
+            for parent_class in self.__class__.__mro__[1:]:
+                parent_class.__init__(self)
+            if config['show_console']:
+                self.console_thread = InteractiveShell(self)
+                self.console_thread.start()
+        except Exception:
+            error_box(traceback.format_exc(limit=1))
+            self.shutdown(0)
 
     def delay(self, ms):
         till = pg.time.get_ticks() + ms

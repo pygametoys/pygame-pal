@@ -6,7 +6,7 @@ from pgpal.configpage import pyform
 from pgpal.const import *
 from pgpal import configspec, config, vdt
 
-mido.backends.backend.DEFAULT_BACKEND = 'mido.backends.pygame'
+mido.set_backend('mido.backends.pygame')
 
 translations = {
     'path': '目录',

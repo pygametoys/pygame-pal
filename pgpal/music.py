@@ -15,9 +15,7 @@ class Midi(Thread):
 
     def __init__(self):
         Thread.__init__(self)
-        mido.backends.backend.DEFAULT_BACKEND = 'mido.backends.%s' % (
-            config['midi_backend']
-        )
+        mido.set_backend('mido.backends.%s' % config['midi_backend'])
         avail_ports = mido.get_output_names()
         if config['midi_port'] and config['midi_port'] in avail_ports:
             self.port = mido.open_output(name=config['midi_port'])
@@ -190,7 +188,8 @@ class MusicPlayerMixin(object):
     def quit_music(self):
         if hasattr(self, 'cd'):
             self.cd.quit()
-        self.music.quit()
+        if hasattr(self, 'music'):
+            self.music.quit()
 
     def set_volume(self, volume):
         config['volume'] = min(volume, PAL_MAX_VOLUME)

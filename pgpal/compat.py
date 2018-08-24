@@ -50,3 +50,25 @@ def open_ignore_case(filepath, *args, **kwargs):
         if 'w' in args[0]:
             return open(filepath, *args, **kwargs)
         raise FileNotFoundError
+
+def error_box(message):
+    title = 'Fatal error'
+    import platform
+    system = platform.system()
+    try:
+        if system == 'Windows':
+            MB_ICONERROR = 0x10
+            MB_OK = 0
+            from ctypes import windll
+            windll.user32.MessageBoxA(0, message, title, MB_OK | MB_ICONERROR)
+        else:
+            from subprocess import call
+            if system == 'Linux':
+                call(['zenity', '--error', '--title', repr(title), '--text', repr(message)])
+            elif system == 'Darwin':
+                call(['/Applications/CocoaDialog.app/Contents/MacOS/CocoaDialog', 'ok-msgbox', '--icon', 'x', '--title', repr(title), '--text', repr(message)])
+            else:
+                raise Exception()
+    except Exception:
+        import logging
+        logging.error(message)
