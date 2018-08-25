@@ -24,15 +24,16 @@ class Midi(Thread):
 
     def load(self, index):
         if os.path.exists(os.path.join(config['game_path'], 'Musics')):
+        try:
+            name = open('./Musics/%.3d.mid' % index, 'rb')
+            self.midifile = mido.MidiFile(file=name)
+            return True
+        except (FileNotFoundError, ValueError):
             try:
-                name = open('./Musics/%.3d.mid' % index, 'rb')
-                self.midifile = mido.MidiFile(file=name)
-                return True
-            except (FileNotFoundError, ValueError):
-                self.midifile = mido.MidiFile()
-                return False
-        elif os.path.exists(os.path.join(config['game_path'], 'midi.mkf')):
-            data = MKFDecoder('midi.mkf', yj1=False).read(index, True)
+                midi_mkf = MKFDecoder('midi.mkf', yj1=False)
+                data = midi_mkf.read(index, True)
+            except Exception:
+                data = ''
             if len(data):
                 name = BytesIO(data)
                 self.midifile = mido.MidiFile(file=name)
@@ -40,27 +41,26 @@ class Midi(Thread):
             else:
                 self.midifile = mido.MidiFile()
                 return False
-        else:
-            self.midifile = mido.MidiFile()
-            return False
 
     def play(self, loop=0):
-        self.loop = loop
-        self.unpause()
+        with self.port._lock:
+            self.loop = loop
+            self.unpause()
 
     def run(self):
         self.n = self.loop = 0
         self.paused = True
         while not self.port.closed:
             while not self.paused:
-                _id = id(self.midifile)
-                for msg in self.midifile.play():
-                    if hasattr('msg', 'velocity'):
-                        msg.velocity = msg.velocity * \
-                           config['volume'] / PAL_MAX_VOLUME
-                    self.port.send(msg)
-                    if self.paused or _id != id(self.midifile):
-                        break
+                with self.port._lock:
+                    _id = id(self.midifile)
+                    for msg in self.midifile.play():
+                        if hasattr('msg', 'velocity'):
+                            msg.velocity = msg.velocity * \
+                            config['volume'] // PAL_MAX_VOLUME
+                        self.port.send(msg)
+                        if self.paused or _id != id(self.midifile):
+                            break
                 if not self.loop:
                     self.paused = True
                     self.port.send(mido.Message('stop'))
@@ -70,7 +70,7 @@ class Midi(Thread):
                     break
             with self.port._lock:
                 if self.paused:
-                    time.sleep(0.1)
+                    time.sleep(0.001)
 
     def pause(self):
         self.paused = True

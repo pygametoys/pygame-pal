@@ -47,7 +47,8 @@ def open_ignore_case(filepath, *args, **kwargs):
         if os.path.exists(test_path):
             return open(test_path, *args, **kwargs)
     else:
-        if 'w' in args[0]:
+        mode = kwargs.get('mode', args[0] if len(args) else '')
+        if 'w' in mode:
             return open(filepath, *args, **kwargs)
         raise FileNotFoundError
 
