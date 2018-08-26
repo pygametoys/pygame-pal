@@ -23,7 +23,6 @@ class Midi(Thread):
             self.port = mido.open_output(name=avail_ports[0])
 
     def load(self, index):
-        if os.path.exists(os.path.join(config['game_path'], 'Musics')):
         try:
             name = open('./Musics/%.3d.mid' % index, 'rb')
             self.midifile = mido.MidiFile(file=name)
@@ -70,7 +69,7 @@ class Midi(Thread):
                     break
             with self.port._lock:
                 if self.paused:
-                    time.sleep(0.001)
+                    time.sleep(0.05)
 
     def pause(self):
         self.paused = True
