@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 from functools import partial
 import random
 from struct import pack_into, unpack_from
@@ -1064,6 +1064,7 @@ class InterpreterContext(object):
                 enemy.state = FighterState.Wait
                 enemy.color_shift = 0
                 self.game.battle.enemies[i] = enemy
+        self.game.battle.enemies[self.event_object_id].e.health = (self.game.battle.enemies[self.event_object_id].e.health + w) // (w + 1)
         self.game.load_battle_sprites()
         for i in range(self.game.battle.max_enemy_index + 1):
             if self.game.battle.enemies[i].object_id == 0:
