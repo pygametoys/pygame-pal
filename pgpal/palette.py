@@ -85,12 +85,12 @@ class PalettePainterMixin(object):
         self.set_screen_palette(palette)
 
     def set_screen_palette(self, palette):
+        self.screen.set_palette(palette)
+        self.screen_bak.set_palette(palette)
         if pg.get_sdl_version() >= (2, 0, 0):
-            pass  # fixme?
+            self.update_screen()
         else:
             self.screen_real.set_palette(palette)
-            self.screen.set_palette(palette)
-            self.screen_bak.set_palette(palette)
 
     def palette_fade(self, update_scene, *args):
         new_palette = self.get_palette(*args)
