@@ -3,7 +3,6 @@
 import attr
 from struct import unpack_from
 from array import array
-from pgpal.compat import range, zip
 from pgpal.utils import Structure, Pointer
 
 

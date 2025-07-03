@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from pgpal.compat import pg, range
+from pgpal.compat import pg
 from pgpal.const import *
 from pgpal.mkfext import MAP
 from pgpal.player import Sprite

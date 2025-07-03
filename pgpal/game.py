@@ -5,7 +5,7 @@ import sys
 from threading import Thread
 import traceback
 from pgpal import config
-from pgpal.compat import pg, range, error_box
+from pgpal.compat import pg, error_box
 from pgpal.const import *
 from pgpal.utils import pal_x, pal_y, RunResult
 from pgpal.battle import BattleFieldMixin, FighterTeamMixin

@@ -1,11 +1,14 @@
 #! /usr/bin/env python
 # -*- coding: utf8 -*-
-import attr
-from io import BytesIO
 import base64
 import math
+from io import BytesIO
+from functools import partialmethod
+
+import attr
+
 from pgpal import config
-from pgpal.compat import pg, range, partialmethod
+from pgpal.compat import pg
 from pgpal.const import *
 from pgpal.mkfbase import is_win95
 from pgpal.utils import pal_x, pal_y
@@ -76,7 +79,7 @@ class ScreenDisplayMixin(object):
         else:
             mode |= RESIZABLE
             self.screen_real = pg.display.set_mode(self.SCREEN_SIZE, mode, 8)
-        icon = BytesIO(base64.decodestring(ICON))
+        icon = BytesIO(base64.decodebytes(ICON))
         pg.display.set_icon(pg.image.load(icon).convert_alpha())
         mode = (RESIZABLE & mode) | (FULLSCREEN & mode)
         self.screen = pg.Surface((320, 200), mode, 8)

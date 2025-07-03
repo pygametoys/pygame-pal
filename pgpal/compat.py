@@ -5,8 +5,6 @@ from __future__ import (
     unicode_literals
 )
 import os
-import sys
-import six
 try:
     import pygame as pg
 except ImportError:
@@ -14,27 +12,8 @@ except ImportError:
     # pg.import_as_pygame()
     raise RuntimeError("pygame is not installed")
 
-from pygame.compat import xrange_ as range
-try:
-    from itertools import izip as zip
-except ImportError:
-    from builtins import zip
-
-try:
-    import textwrap3 as textwrap
-except ImportError:
-    import textwrap
-
-try:
-    from functools import partialmethod, lru_cache
-except ImportError:
-    from backports.functools_lru_cache import lru_cache
-    from backports.functools_partialmethod import partialmethod
 
 from pgpal import config
-
-
-FileNotFoundError = getattr(six.moves.builtins, 'FileNotFountError', IOError)
 
 
 def open_ignore_case(filepath, *args, **kwargs):
@@ -61,7 +40,7 @@ def error_box(message):
             MB_ICONERROR = 0x10
             MB_OK = 0
             from ctypes import windll
-            windll.user32.MessageBoxA(0, message, title, MB_OK | MB_ICONERROR)
+            windll.user32.MessageBoxW(0, message, title, MB_OK | MB_ICONERROR)
         else:
             from subprocess import call
             if system == 'Linux':

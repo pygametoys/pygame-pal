@@ -1,7 +1,8 @@
 #! /usr/bin/env python
 # -*- coding: utf8 -*-
 from functools import partial
-from pgpal.compat import pg, range
+
+from pgpal.compat import pg
 from pgpal.mkfbase import is_win95
 
 

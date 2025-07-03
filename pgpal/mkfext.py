@@ -3,8 +3,10 @@
 
 # modified from huangcd's mkf.py
 from collections import deque
+from functools import lru_cache, partialmethod
 from struct import unpack_from
-from pgpal.compat import pg, range, partialmethod, lru_cache
+
+from pgpal.compat import pg
 from pgpal.utils import Object, pal_x, pal_y
 from pgpal.mkfbase import MKFDecoder, YJ1Decoder
 

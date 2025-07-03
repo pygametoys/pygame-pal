@@ -3,7 +3,7 @@
 import sys
 import os
 from configobj import ConfigObj
-from validate import Validator
+from configobj.validate import Validator
 from io import BytesIO
 
 if sys.platform.startswith('win'):
@@ -38,7 +38,9 @@ game_path = string(default='.')
 opl_chip = option('opl2', 'opl3', default='opl2')
 ''')
 
-configspec = ConfigObj(spec, encoding='UTF8',
-                       list_values=False, _inspec=True)
+configspec = ConfigObj(
+    spec, encoding='UTF8',
+    list_values=False, _inspec=True
+)
 config = ConfigObj(os.path.abspath('pgpal.cfg'), configspec=configspec)
 config.validate(vdt)

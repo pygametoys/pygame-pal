@@ -1,9 +1,11 @@
 #! /usr/bin/env python
 # -*- coding: utf8 -*-
 import random
+from functools import partialmethod
+
 import attr
 from pgpal import config
-from pgpal.compat import pg, range, partialmethod
+from pgpal.compat import pg
 from pgpal.const import *
 from pgpal.mkfbase import is_win95
 from pgpal.mkfext import Ball, Data, FBP, MGO, RGM, SubPlace

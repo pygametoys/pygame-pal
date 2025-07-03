@@ -2,25 +2,26 @@
 # -*- coding: utf8 -*-
 import base64
 import copy
-from io import BytesIO
 import math
 import re
 import struct
 import sys
+from functools import partialmethod
+from io import BytesIO
 
-import chardet
+import charset_normalizer
 from configobj import ConfigObj
 import wcwidth
 from pygame import freetype
 
-from pgpal.compat import pg, range, partialmethod, open_ignore_case as open
+from pgpal.compat import pg, open_ignore_case as open
 from pgpal.const import *
 from pgpal.mkfext import Data, SSS, SubPlace
 from pgpal.utils import Object, pal_x, pal_y
 from pgpal import config
 
 
-encoding = None
+encoding = "utf-8"
 iso_font = bytearray(
     base64.b64decode(
 b'''\
@@ -80,7 +81,7 @@ def get_char_width(o):
 
 
 class Desc(Object):
-    DESC_RE = re.compile('(.*)\((.*)\)=(.*)')
+    DESC_RE = re.compile(r'(.*)\((.*)\)=(.*)')
 
     def __init__(self):
         with open('desc.dat', 'rb') as f:
@@ -99,10 +100,12 @@ class Word(Object):
         with open('word.dat', 'rb') as f:
             self.data = f.read()
         global encoding
-        if encoding is None:
-            encoding = chardet.detect(self.data)['encoding']
-            if encoding.lower() in {'gb2312', 'iso-8859-1'}:
+        _encoding = charset_normalizer.detect(self.data.lstrip(b"\x00"))['encoding']
+        if _encoding is not None:
+            if _encoding.lower() in {'gb2312', 'gb18030', 'iso-8859-1'}:
                 encoding = 'gbk'
+            elif _encoding.lower() in {'big5', 'cp950'}:
+                encoding = 'big5'
         self.init_fonts()
 
     def init_fonts(self):
@@ -134,7 +137,7 @@ class Msg(Object):
 class TextPrinterMixin(object):
     def __init__(self):
         self.word_length = 10
-        if config['msg_file']:
+        if config['msg_file']:            
             with open(config['msg_file'], 'rb') as f:
                 content = f.read()
                 cfg_content, msg_content = content.split(b'\n[BEGIN MESSAGE]', 1)
@@ -145,7 +148,7 @@ class TextPrinterMixin(object):
                 self.words = {int(i): word for i, word in cfg['BEGIN WORDS'].items()}
                 self.msgs = []
                 self.msg_index = {}
-                for sid, block, eid in re.findall(u'\[BEGIN MESSAGE\] (\d+)([\s\S]+?)\[END MESSAGE\] (\d+)', msg_content.decode('utf-8'), re.UNICODE):
+                for sid, block, eid in re.findall(r'\[BEGIN MESSAGE\] (\d+)([\s\S]+?)\[END MESSAGE\] (\d+)', msg_content.decode('utf-8'), re.UNICODE):
                     item = int(sid)
                     self.msg_index[item] = []
                     for line in block.strip().splitlines():
@@ -441,13 +444,13 @@ class TextPrinterMixin(object):
                     self.current_font_color = FONT_COLOR_YELLOW
                 i += 1
             elif char == '$':
-                num = re.compile('^\d+').match(text[i+1:]).group(0)
+                num = re.compile(r'^\d+').match(text[i+1:]).group(0)
                 self.delay_time = int(num) * 10 // 7
                 i += 3
             elif char == '~':
                 if self.user_skip:
                     self.update_screen()
-                num = re.compile('^\d+').match(text[i+1:]).group(0)
+                num = re.compile(r'^\d+').match(text[i+1:]).group(0)
                 if not is_dialog:
                     self.delay(int(num) * 80 // 7)
                 self.current_dialog_line_num = -1

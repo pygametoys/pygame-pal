@@ -7,7 +7,7 @@ from pgpal.game import *
 class Crane(pg.sprite.DirtySprite):
 
     def __init__(self, x, y, frame, sprite):
-        pg.sprite.DirtySprite.__init__(self)
+        super().__init__()
         self.SpriteCrane = sprite
         self.frame = frame
         self.rect = pg.Rect(
@@ -33,8 +33,8 @@ def run():
         main_game(game)
     except SystemExit:
         pass
-    except:
-        error_box(traceback.format_exc(limit=1))
+    except Exception:
+        error_box(traceback.format_exc())
 
 def trademark_screen(game):
     if game.play_video('1.AVI'):

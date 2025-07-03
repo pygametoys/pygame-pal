@@ -1,11 +1,12 @@
 #! /usr/bin/env python
 # -*- coding: utf8 -*-
 from collections import deque
+from functools import partialmethod
 from itertools import chain
 from operator import attrgetter
 import random
 import attr
-from pgpal.compat import range, partialmethod
+
 from pgpal.const import *
 from pgpal.mkfbase import is_win95
 from pgpal.mkfext import ABC, F, Fire, SubPlace

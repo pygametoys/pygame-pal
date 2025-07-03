@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 from struct import unpack_from
 from pgpal.utils import singleton
-from pgpal.compat import range, open_ignore_case as open
+from pgpal.compat import open_ignore_case as open
 
 
 try:

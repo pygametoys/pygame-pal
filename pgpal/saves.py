@@ -1,12 +1,10 @@
 # -*- coding: utf8 -*-
-import os
 from struct import unpack
 from pgpal.player import *
 from pgpal.res import Event
 from pgpal.scene import Scene
 from pgpal.utils import read_by_struct
-from pgpal import config
-from pgpal.compat import range, FileNotFoundError, open_ignore_case as open
+from pgpal.compat import open_ignore_case as open
 
 
 class SetupStruct(Structure):

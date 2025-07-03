@@ -2,8 +2,9 @@
 import os
 from io import BytesIO
 import wave
+
 from pgpal import config
-from pgpal.compat import pg, range
+from pgpal.compat import pg
 from pgpal.const import *
 from pgpal.mkfext import RNG
 from pgpal.text import encoding
@@ -62,8 +63,8 @@ class MoviePlayerMixin(object):
             )
             for packet in video.demux(astream):
                 for frame in packet.decode():
-                    frame = resampler.resample(frame)
-                    wav.writeframes(frame.planes[0].to_bytes())
+                    for resampled_frame in resampler.resample(frame):
+                        wav.writeframes(bytes(resampled_frame.planes[0]))
             wav.close()
             fw.seek(0)
             pg.mixer.music.load(fw)
@@ -74,7 +75,7 @@ class MoviePlayerMixin(object):
                 metadata_errors='replace'
             )
             vstream = next(s for s in video.streams if s.type == 'video')
-            rate = int(round(1000 / vstream.rate))
+            rate = int(round(1000 / vstream.average_rate))
             pg.mixer.music.play()
             self.clear_key_state()
             other = not hasattr(pg.image, 'frombuffer')
@@ -94,7 +95,7 @@ class MoviePlayerMixin(object):
                                 (0, 0)
                             )
                         else:
-                            data = frame.to_rgb().planes[0].to_bytes()
+                            data = bytes(frame.to_rgb().planes[0])
                             self.screen_real.blit(
                                 pg.transform.smoothscale(
                                     pg.image.frombuffer(

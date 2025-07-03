@@ -23,26 +23,20 @@ setup(
     description="A pygame-based open-source re-implemention of the classic Chinese RPG game 'Chinese Paladin'",
     license="GPLv3",
     install_requires=[
-        'cython'
+        'cython',
         'pygame',
         'attrs',
         'configobj',
-        'six',
-        'chardet',
+        'charset-normalizer',
         'pyaudio',
         'wrapt',
         'mido',
         'pyperclip',
-        "enum34 ; python_version <= '2.7'",
-        "textwrap3 ; python_version <= '2.7'",
-        "backports.functools_lru_cache ; python_version <= '2.7'",
-        "backports.functools_partialmethod ; python_version <= '2.7'"
     ],
     extras_require={
         'rix': ['pyopl'],
         'video': ['pyav >= 0.4.0'],
         'console': ['ptpython'],
-        'speedup': ["psyco ; python_version < '2.7' and platform_machine == 'x86' and platform_python_implementation == 'CPython'"]
     },
     packages=['pgpal',
               'pgpal.configpage'],

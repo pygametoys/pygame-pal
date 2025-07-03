@@ -7,7 +7,6 @@ import time
 import pyaudio
 import pyopl
 from pgpal import config
-from pgpal.compat import range
 from pgpal.mkfext import RIX
 from pgpal.sound import adjust_pcm_volume
 from threading import Thread

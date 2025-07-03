@@ -1,12 +1,10 @@
 #! /usr/bin/env python
 # -*- coding: utf8 -*-
-import sys
 import struct
 from operator import itemgetter
 import attr
-from six import add_metaclass, reraise
+from six import add_metaclass
 import wrapt
-from pgpal.compat import range
 
 
 def hashable(obj):
@@ -65,7 +63,7 @@ class StructField(object):
     def __set__(self, instance, val):
         try:
             struct.pack_into(self.format, instance._buffer, self.offset, val)
-        except struct.error:
+        except struct.error as e:
             if len(self.format) == 1 and self.format in 'bBhHiIlLqQ':
                 _struct = struct.Struct(self.format)
                 size = _struct.size
@@ -77,7 +75,7 @@ class StructField(object):
                     val = val & base
                 _struct.pack_into(instance._buffer, self.offset, val)
             else:
-                reraise(*sys.exc_info())
+                raise e
 
     def __mul__(self, other):
         if isinstance(other, int):

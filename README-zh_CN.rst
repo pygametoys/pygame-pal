@@ -13,13 +13,12 @@ sdlpal项目(http://github.com/sdlpal/sdlpal)，
 
 以及 huangcd 所做的工作(http://github.com/huangcd/python-pal)。
 
-支持CPython 2.6/2.7 以及 CPython 3.3以上 的版本(当然，更推荐使用python3)，在 Manjaro Linux 17.1 和 Windows 7 64bit 系统中测试通过。
+支持CPython 3.10以上的版本，在 Manjaro Linux 17.1 和 Windows 7 64bit 系统中测试通过。
 
 基础依赖：
 ___________
-	| pygame (基于 sdl 1.x)
-	| six
-	| chardet
+	| pygame (基于 sdl 2.x)
+	| charset-normalizer
 	| configobj
 	| attrs
 	| wcwidth
@@ -28,19 +27,11 @@ ___________
 	| pyaudio (播放音效及rix音乐)
 	| mido (播放midi)
 
-Python2专有依赖：
-______________________________
-	| enum34
-	| textwrap3
-	| backports.functools_lru_cache
-	| backports.functools_partialmethod
-
 可选依赖：
 ______________________
 	| pyopl (基于dosbox的opl合成器, 用来模拟播放opl音乐. 如果是python3版本, 请使用此分支: https://github.com/pygametoys/pyopl/tree/pyopl-py3)
 	| pyav (基于ffmpeg, 播放win95版的avi视频)
 	| ptpython (更智能的控制台)
-	| psyco (只能用于python2.6及之前的32位版本，据说会有一丝丝的加速效果)
 
 开发依赖：
 _________________________

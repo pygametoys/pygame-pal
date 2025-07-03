@@ -1,11 +1,12 @@
 # -*- coding: utf8 -*-
 from random import randint
+from functools import partialmethod
 from struct import pack_into
-from pgpal.compat import range, partialmethod
+
 from pgpal.const import *
 from pgpal.mkfbase import is_win95
 from pgpal.res import Item
-from pgpal.utils import Structure, WORD, short
+from pgpal.utils import Structure, WORD
 
 
 class Sprite(pg.sprite.DirtySprite):

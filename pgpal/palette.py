@@ -1,10 +1,8 @@
 ##! /usr/bin/env python
 # -*- coding: UTF-8 -*-
 import copy
-from pgpal import config
-from pgpal.compat import pg, range, open_ignore_case as open
+from pgpal.compat import pg, open_ignore_case as open
 from pgpal.const import FRAME_TIME, Direction
-from pgpal.utils import pal_x, pal_y
 
 
 class PalettePainterMixin(object):
