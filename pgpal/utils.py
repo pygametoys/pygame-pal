@@ -3,7 +3,6 @@
 import struct
 from operator import itemgetter
 import attr
-from six import add_metaclass
 import wrapt
 
 
@@ -205,8 +204,7 @@ class Union(StructureMeta):
                 setattr(self, fieldname, StructField(format, offset))
 
 
-@add_metaclass(Union)
-class Structure(object):
+class Structure(metaclass=Union):
     '''
     A simple fixed size struct implementation just like ctypes.Structure
     '''
@@ -255,19 +253,12 @@ class ObjectMeta(type):
             else id(arg) for arg in args
         )
         if arg_ids not in cls._instances:
-            cls._instances[arg_ids] = Object.__new__(cls)
+            cls._instances[arg_ids] = cls.__new__(cls)
             cls._instances[arg_ids].__init__(*args, **kwargs)
         return cls._instances[arg_ids]
 
-singleton = add_metaclass(ObjectMeta)
 
-
-@singleton
-class Object(object):
-    """a new-style singleton class base"""
-
-
-class RunResult(Object):
+class RunResult(metaclass=ObjectMeta):
     success = False
 
 

@@ -7,7 +7,7 @@ from functools import lru_cache, partialmethod
 from struct import unpack_from
 
 from pgpal.compat import pg
-from pgpal.utils import Object, pal_x, pal_y
+from pgpal.utils import ObjectMeta, pal_x, pal_y
 from pgpal.mkfbase import MKFDecoder, YJ1Decoder
 
 
@@ -187,7 +187,7 @@ class SubPlace(MKFDecoder):
             return None
 
 
-class GOPLike(Object):
+class GOPLike(metaclass=ObjectMeta):
 
     """
     类GOP.MKF的存储格式的mkf文件的解码器

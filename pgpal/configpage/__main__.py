@@ -1,7 +1,9 @@
 # coding: utf-8
+import textwrap
+
 import mido
 from wcwidth import wcswidth
-from pgpal.compat import pg, textwrap, unicode_literals
+from pgpal.compat import pg
 from pgpal.configpage import pyform
 from pgpal.const import *
 from pgpal import configspec, config, vdt

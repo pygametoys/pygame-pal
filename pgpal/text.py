@@ -17,7 +17,7 @@ from pygame import freetype
 from pgpal.compat import pg, open_ignore_case as open
 from pgpal.const import *
 from pgpal.mkfext import Data, SSS, SubPlace
-from pgpal.utils import Object, pal_x, pal_y
+from pgpal.utils import ObjectMeta, pal_x, pal_y
 from pgpal import config
 
 
@@ -80,7 +80,7 @@ def get_char_width(o):
     return width << 3
 
 
-class Desc(Object):
+class Desc(metaclass=ObjectMeta):
     DESC_RE = re.compile(r'(.*)\((.*)\)=(.*)')
 
     def __init__(self):
@@ -94,7 +94,7 @@ class Desc(Object):
         return self.descs.get(index, None)
 
 
-class Word(Object):
+class Word(metaclass=ObjectMeta):
     def __init__(self, word_length):
         self.word_length = word_length
         with open('word.dat', 'rb') as f:
@@ -122,7 +122,7 @@ class Word(Object):
         ].rstrip(b'\x20\x00').decode(encoding, 'replace')
 
 
-class Msg(Object):
+class Msg(metaclass=ObjectMeta):
     def __init__(self):
         self.indexes = SSS().read(3)
         msg_file = 'm.msg'

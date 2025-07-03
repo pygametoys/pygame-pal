@@ -1,15 +1,16 @@
 #! /usr/bin/env python
 # -*- coding: utf8 -*-
 from struct import unpack_from
-from pgpal.utils import singleton
+from pgpal.utils import ObjectMeta
 from pgpal.compat import open_ignore_case as open
 
 
 try:
-    from pgpal._yj1 import YJ1Decoder
+    from pgpal._yj1 import YJ1Decoder as _YJ1Decoder
 except ImportError:
-    from pgpal.yj1 import YJ1Decoder
-YJ1Decoder = singleton(YJ1Decoder)
+    from pgpal.yj1 import YJ1Decoder as _YJ1Decoder
+class YJ1Decoder(_YJ1Decoder, metaclass=ObjectMeta):
+    pass
 
 
 class MKFDecoder(object):
