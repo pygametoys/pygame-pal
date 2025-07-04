@@ -136,12 +136,9 @@ class MusicPlayerMixin(object):
             self.music = Rix()
         else:
             self.music = Music()
-        cd = config['cd']
-        if cd:
+        if cd := config['cd']:
             if cd in {'ogg', 'mp3'}:
                 self.cd = FakeCD(cd)
-            elif hasattr(pg, 'cdrom') and pg.cdrom.get_count() > 0:
-                self.cd = pg.cdrom.CD(cd)
         self.set_volume(config['volume'])
 
     def play_music(self, index=None, loop=True, fade_time=0):
