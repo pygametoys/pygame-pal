@@ -56,12 +56,6 @@ class OPLStream(object):
         )
         self.ticks_per_second = ticks_per_second
         self.buf = bytearray(synth_size * sample_size * num_channels)
-        '''
-        pyaudio_buf is a different data type but points to the same memory
-        as self.buf, so changing one affects the other.  We put this in the
-        constructor so we don't have to recreate it every time we process
-        samples, which would eat up CPU time unnecessarily.
-        '''
         self.delay = 0
         self.stream = stream
 
@@ -469,10 +463,6 @@ class RixPlayer(Thread):
 
     def run(self):
         # Set up the audio stream
-
-        # At this point we have to hope PyAudio has got us the audio format we
-        # requested.  It doesn't always, but it lacks functions for us to check
-        # This means we could end up outputting data in the wrong format...
         with self.stream:
             while not self.ended:
                 self.prepare()

@@ -22,7 +22,7 @@ ___________
 	| configobj
 	| attrs
 	| wcwidth
-	| pyaudio (for rix music & sound effect playback)
+	| sounddevice (for rix music playback)
 	| mido (for midi music playback)
 
 Optional requirements:

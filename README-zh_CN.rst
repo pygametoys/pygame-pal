@@ -22,7 +22,7 @@ ___________
 	| configobj
 	| attrs
 	| wcwidth
-	| pyaudio (播放音效及rix音乐)
+	| sounddevice (播放rix音乐)
 	| mido (播放midi)
 
 可选依赖：
