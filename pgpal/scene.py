@@ -174,8 +174,7 @@ class SceneLoaderMixin(object):
                 evt_obj.layer * 8 + 2
             )
             self.calc_cover_tiles(self.sprite_to_draw.sprites()[-1])
-        self.sprite_to_draw.sprites().sort(key=lambda sprite: pal_y(sprite.pos))
-        for p in self.sprite_to_draw:
+        for p in sorted(self.sprite_to_draw.sprites(), key=lambda sprite: pal_y(sprite.pos)):
             x = pal_x(p.pos)
             y = pal_y(p.pos) - p.frame.height - p.layer
             p.frame.blit_to(self.screen, (x, y))

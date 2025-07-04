@@ -106,7 +106,7 @@ class TextInput(InputObject):
 
     ALPHA = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_"
     NUMS = "0123456789"
-    SPECIAL = "!\"#$%&\\'()*+,-./:;<=>?@[\]^`{|}~"
+    SPECIAL = "!\"#$%&\\'()*+,-./:;<=>?@[]^`{|}~"
     ALPHA_NUMS = ALPHA + NUMS
     ALL_CHARS = ALPHA + NUMS + SPECIAL
 
