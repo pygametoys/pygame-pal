@@ -5,7 +5,8 @@ from struct import unpack_from, pack_into
 from threading import Thread
 import time
 import wave
-import pyaudio
+
+from pgpal.compat import pyaudio
 from pgpal.mkfbase import MKFDecoder, is_win95
 from pgpal import config
 

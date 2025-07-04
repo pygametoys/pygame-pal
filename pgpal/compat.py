@@ -5,6 +5,13 @@ from __future__ import (
     unicode_literals
 )
 import os
+import sys
+
+if sys.platform == 'win32':
+    import pyaudiowpatch as pyaudio
+else:
+    import pyaudio
+
 
 from pgpal import config
 

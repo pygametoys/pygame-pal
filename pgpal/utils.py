@@ -247,7 +247,7 @@ class ObjectMeta(type):
     
     def __call__(cls, *args, **kwargs):
         if not hasattr(cls, '_instances'):
-            cls._instances = dict()
+            cls._instances = {}
         arg_ids = tuple(
             hash(arg) if hashable(arg)
             else id(arg) for arg in args
