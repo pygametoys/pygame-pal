@@ -23,7 +23,6 @@ ___________
 	| attrs
 	| wcwidth
 	| wrapt
-	| pyperclip
 	| pyaudio (for rix music & sound effect playback)
 	| mido (for midi music playback)
 

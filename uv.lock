@@ -233,7 +233,6 @@ dependencies = [
     { name = "pyaudiowpatch", marker = "sys_platform == 'win32'" },
     { name = "pygame-ce" },
     { name = "pyopl" },
-    { name = "pyperclip" },
     { name = "standard-sndhdr", marker = "python_full_version >= '3.13'" },
     { name = "wcwidth" },
     { name = "wrapt" },
@@ -250,7 +249,6 @@ requires-dist = [
     { name = "pyaudiowpatch", marker = "sys_platform == 'win32'", specifier = ">=0.2.12.7" },
     { name = "pygame-ce", specifier = ">=2.5.5" },
     { name = "pyopl", specifier = ">=2.0" },
-    { name = "pyperclip", specifier = ">=1.9.0" },
     { name = "standard-sndhdr", marker = "python_full_version >= '3.13'", specifier = ">=3.13.0" },
     { name = "wcwidth", specifier = ">=0.2.13" },
     { name = "wrapt", specifier = ">=1.17.2" },
@@ -281,12 +279,6 @@ wheels = [
     { url = "https://pypi.tuna.tsinghua.edu.cn/packages/d0/b7/39866af537322232d6d9b474a3561b97e645b3b80d16edcb04a2141161aa/PyOPL-2.0-pp310-pypy310_pp73-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:64dd144d2aa566afccedd1eb6ff67d645ffb94df7c8fcd47ee6a3975b0493dbf", size = 33129, upload-time = "2024-03-03T02:49:17.311Z" },
     { url = "https://pypi.tuna.tsinghua.edu.cn/packages/d7/bb/8165c3f8583b3c54a638ece27778dc2185b7bf29bebf06295d29ac088c6e/PyOPL-2.0-pp310-pypy310_pp73-win_amd64.whl", hash = "sha256:80de71248ddc0c5f48a8c5040efae369df32c176dbd4c6ade412fe5b01a5fd29", size = 30893, upload-time = "2024-03-03T02:49:18.26Z" },
 ]
-
-[[package]]
-name = "pyperclip"
-version = "1.9.0"
-source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
-sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/30/23/2f0a3efc4d6a32f3b63cdff36cd398d9701d26cda58e3ab97ac79fb5e60d/pyperclip-1.9.0.tar.gz", hash = "sha256:b7de0142ddc81bfc5c7507eea19da920b92252b548b96186caf94a5e2527d310", size = 20961, upload-time = "2024-06-18T20:38:48.401Z" }
 
 [[package]]
 name = "standard-aifc"
