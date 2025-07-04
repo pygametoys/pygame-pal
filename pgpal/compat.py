@@ -11,6 +11,11 @@ if sys.platform == 'win32':
     import pyaudiowpatch as pyaudio
 else:
     import pyaudio
+try:
+    import cwcwidth as wcwidth
+except ImportError:
+    import wcwidth
+
 
 
 from pgpal import config

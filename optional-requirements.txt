@@ -1,3 +1,4 @@
-pyopl
 av>=0.4.0
+cwcwidth
 ptpython
+pyopl
