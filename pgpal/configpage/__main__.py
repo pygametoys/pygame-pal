@@ -107,6 +107,8 @@ def main():
             config.update(new_cfg)
             if config.validate(vdt) is not True:
                 config.update(old_cfg)
+            else:
+                config.write()
             break
         elif event in int_keys and values[event]:
             try:
