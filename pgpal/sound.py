@@ -1,39 +1,25 @@
 # -*- coding: utf8 -*-
 from io import BytesIO
-import sndhdr
-from struct import unpack_from, pack_into
 from threading import Thread
-import time
 import wave
 
-from pgpal.compat import pyaudio
+import pygame as pg
+import sndhdr
+
 from pgpal.mkfbase import MKFDecoder, is_win95
 from pgpal import config
 
 
-def adjust_pcm_volume(data, width=2):
-    view = bytearray(data)
-    fmt = '%d%s' % (len(data) // width, 'Bhi'[width >> 1])
-    values = unpack_from(fmt, view)
-    pack_into(
-        fmt, view, 0,
-        *(int(round(val * config['volume'] / 100.0)) for val in values)
-    )
-    return bytes(view)
-
-
 class Voice(Thread):
-    audio = pyaudio.PyAudio()
     def __init__(self, index, mkf):
-        Thread.__init__(self)
-        self.daemon = True
+        super().__init__(daemon=True)
         data = mkf.read(index, True)
         if len(data):
             if is_win95:
-                io = BytesIO(data)
+                self.io = BytesIO(data)
             else:
-                io = BytesIO()
-                wav = wave.open(io, 'wb')
+                self.io = BytesIO()
+                wav = wave.open(self.io, 'wb')
                 data = mkf.read(index, True)
                 header = sndhdr.test_voc(data, 0)
                 if header is not None:
@@ -43,32 +29,15 @@ class Voice(Thread):
                 wav.setparams((1, 1, rate, 0, 'NONE', "not compressed"))
                 wav.writeframes(data[26:])
                 wav.close()
-                io.seek(0)
-            self.wav = wave.open(io, 'rb')
+                self.io.seek(0)
         else:
-            self.wav = None
+            self.io = None
 
     def run(self):
-        if self.wav is not None:
-            while not self.audio.get_host_api_count():
-                time.sleep(0.05)
-            sample_width = self.wav.getsampwidth()
-            stream = self.audio.open(
-                format=self.audio.get_format_from_width(sample_width),
-                channels=self.wav.getnchannels(),
-                rate=self.wav.getframerate(),
-                output=True,
-                frames_per_buffer=256
-            )
-            stream.start_stream()
-            data = True
-            while data:
-                data = self.wav.readframes(256)
-                stream.write(adjust_pcm_volume(data, sample_width))
-            self.wav.close()
-            time.sleep(0.05)
-            stream.stop_stream()
-            stream.close()
+        if self.io is not None:
+            sound = pg.mixer.Sound(self.io)
+            sound.set_volume(config["volume"] / 100.0)
+            sound.play()
 
 
 class SoundEffectPlayerMixin(object):

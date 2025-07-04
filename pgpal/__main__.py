@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 # -*- coding: utf8 -*-
-import struct
 from random import randrange
 from pgpal.game import *
 
@@ -147,13 +146,8 @@ def main_game(game):
 
 
 def main():
-    if sys.version_info[0] == 2 and struct.calcsize('P') == 4:
-        try:
-            import psyco
-            psyco.full()
-        except ImportError:
-            pass
     pg.init()
+    pg.mixer.init()
     run()
 
 
