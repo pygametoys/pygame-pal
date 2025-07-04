@@ -25,19 +25,11 @@ ___________
 	| pyaudio (for rix music & sound effect playback)
 	| mido (for midi music playback)
 
-Python2 specific requirements:
-______________________________
-	| enum34
-	| textwrap3
-	| backports.functools_lru_cache
-	| backports.functools_partialmethod
-
 Optional requirements:
 ______________________
 	| pyopl (based on dosbox opl synth, for opl music emulation. If you are using python 3.x, use this branch instead: https://github.com/pygametoys/pyopl/tree/pyopl-py3)
 	| pyav (based on ffmpeg, for avi video playback)
 	| ptpython (for a better repl)
-	| psyco (only for CPython 2.x x86 versions to speed up a little bit)
 
 Development requirements:
 _________________________
