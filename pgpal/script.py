@@ -4,7 +4,7 @@ from functools import partial
 import random
 from struct import pack_into, unpack_from
 from pgpal.battle import BattleEnemy
-from pgpal.compat import pg
+import pygame as pg
 from pgpal.const import *
 from pgpal.mkfbase import is_win95
 from pgpal.player import Players

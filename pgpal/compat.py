@@ -5,13 +5,6 @@ from __future__ import (
     unicode_literals
 )
 import os
-try:
-    import pygame as pg
-except ImportError:
-    # import pygame_sdl2 as pg
-    # pg.import_as_pygame()
-    raise RuntimeError("pygame is not installed")
-
 
 from pgpal import config
 

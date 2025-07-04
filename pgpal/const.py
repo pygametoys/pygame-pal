@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 from enum import IntEnum
 from pgpal.mkfbase import is_win95
-from pgpal.compat import pg
+import pygame as pg
 from pgpal import config
 from pygame.locals import *
 

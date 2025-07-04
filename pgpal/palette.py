@@ -1,7 +1,8 @@
 ##! /usr/bin/env python
 # -*- coding: UTF-8 -*-
 import copy
-from pgpal.compat import pg, open_ignore_case as open
+import pygame as pg
+from pgpal.compat import open_ignore_case as open
 from pgpal.const import FRAME_TIME, Direction
 
 

@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 from functools import partial
 
-from pgpal.compat import pg
+import pygame as pg
 from pgpal.mkfbase import is_win95
 
 

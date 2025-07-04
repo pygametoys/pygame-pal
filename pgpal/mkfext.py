@@ -6,7 +6,7 @@ from collections import deque
 from functools import lru_cache, partialmethod
 from struct import unpack_from
 
-from pgpal.compat import pg
+import pygame as pg
 from pgpal.utils import ObjectMeta, pal_x, pal_y
 from pgpal.mkfbase import MKFDecoder, YJ1Decoder
 

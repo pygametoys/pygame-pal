@@ -2,7 +2,7 @@
 import attr
 import datetime
 from pgpal.const import *
-from pgpal.compat import pg
+import pygame as pg
 from pgpal import config
 
 if config['enable_joystick']:

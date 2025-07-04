@@ -6,7 +6,8 @@ from threading import Thread
 import time
 import mido
 from pgpal.const import PAL_MAX_VOLUME
-from pgpal.compat import pg, open_ignore_case as open
+import pygame as pg
+from pgpal.compat import open_ignore_case as open
 from pgpal.mkfbase import MKFDecoder
 from pgpal import config
 

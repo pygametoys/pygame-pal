@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from pgpal.compat import pg
+import pygame as pg
 from pgpal.const import *
 from pgpal.mkfext import MAP
 from pgpal.player import Sprite

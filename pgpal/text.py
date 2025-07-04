@@ -14,7 +14,8 @@ from configobj import ConfigObj
 import wcwidth
 from pygame import freetype
 
-from pgpal.compat import pg, open_ignore_case as open
+import pygame as pg
+from pgpal.compat import open_ignore_case as open
 from pgpal.const import *
 from pgpal.mkfext import Data, SSS, SubPlace
 from pgpal.utils import ObjectMeta, pal_x, pal_y

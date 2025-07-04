@@ -8,7 +8,7 @@ from functools import partialmethod
 import attr
 
 from pgpal import config
-from pgpal.compat import pg
+import pygame as pg
 from pgpal.const import *
 from pgpal.mkfbase import is_win95
 from pgpal.utils import pal_x, pal_y

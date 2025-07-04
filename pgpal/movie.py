@@ -4,7 +4,7 @@ from io import BytesIO
 import wave
 
 from pgpal import config
-from pgpal.compat import pg
+import pygame as pg
 from pgpal.const import *
 from pgpal.mkfext import RNG
 from pgpal.text import encoding

@@ -1,14 +1,11 @@
 # coding: utf-8
-import textwrap
-
 import mido
-from wcwidth import wcswidth
-from pgpal.compat import pg
-from pgpal.configpage import pyform
-from pgpal.const import *
 from pgpal import configspec, config, vdt
 
+import FreeSimpleGUI as sg
+
 mido.set_backend('mido.backends.pygame')
+
 
 translations = {
     'path': '目录',
@@ -45,88 +42,78 @@ def translate(key):
     return ''.join(translations.get(word, word.capitalize()) for word in key.split('_'))
 
 def main():
-    pg.init()
-    pg.display.set_caption('Pygame-Pal config')
-    screen = pg.display.set_mode((960, 40 * (len(configspec) + 2)), pg.RESIZABLE)
-    screen.fill((255, 255, 255))
+    layout = []
+    int_keys = []
+    for key, spec in configspec.items():
+        name = translate(key) + ':'
+        fun_name, fun_args, fun_kwargs, default = vdt._parse_with_caching(spec)
+        current = config[key]
+        if key == 'midi_port':
+            fun_name = 'option'
+            fun_args = mido.get_output_names()
+        line = [
+            sg.Text(name, size=(10, 1))
+        ]
+        if fun_name == "option":
+            line.append(
+                sg.InputCombo(
+                    values=fun_args,
+                    default_value=current,
+                    key=key
+                )
+            )
+            layout.append(line)
+        elif fun_name == 'string':
+            line.append(
+                sg.InputText(
+                    default_text=current,
+                    key=key
+                )
+            )
+            layout.append(line)
+        elif fun_name == 'integer':
+            line.append(
+                sg.InputText(
+                    default_text=current,
+                    enable_events=True,
+                    key=key,
+                )
+            )
+            layout.append(line)
+            int_keys.append(key)
+        elif fun_name == 'boolean':
+            line.append(
+                sg.Checkbox(
+                    text='',
+                    default=current,
+                    key=key
+                )
+            )
+            layout.append(line)
 
-    # returns a function that prints the value of the given form
-    # used for on_change
-    def validate(this):
-        def ret():
-            new_cfg = this.value
+    layout.append(
+        [sg.Button('确定'), sg.Button('取消')]
+    )
+
+    window = sg.Window('Pygame-Pal config', layout)
+
+    while True:
+        event, values = window.read()
+        if event in (sg.WIN_CLOSED, '取消'):
+            break
+        if event == '确定':
+            new_cfg = values
             old_cfg = config.copy()
             config.update(new_cfg)
             if config.validate(vdt) is not True:
                 config.update(old_cfg)
-        return ret
-
-    # allows repeats when holding down a key
-    pyform.set_key_repeat(True)
-    form = pyform.Form("main")
-
-    label = pyform.Label('notice:', u'按回车键保存配置, esc退出', pos=(10, 10), text_color=(255, 0, 0))
-    form.add_form_object(label)
-    for i, (key, spec) in enumerate(configspec.items()):
-        row = 50 + i * 40
-        col = 10
-        name = translate(key) + ':'
-        label = pyform.Label(name, name, pos=(col, row), text_color=(120, 20, 120))
-        form.add_form_object(label)
-        col += wcswidth(name) * 20
-        fun_name, fun_args, fun_kwargs, default = vdt._parse_with_caching(spec)
-        current = str(config[key])
-        if key == 'midi_port':
-            fun_name = 'option'
-            fun_args = mido.get_output_names()
-        if fun_name == 'integer':
-            form.add_form_object(pyform.TextInput(key, pos=(col, row), input_width=400,
-                                 default_text='-'.join(fun_args), default=current, allowed_chars=pyform.TextInput.NUMS))
-        elif fun_name == 'string':
-            form.add_form_object(pyform.TextInput(key, pos=(col, row), input_width=400,
-                                 default_text=translate(key), default=current))
-        elif fun_name == 'boolean':
-            radiogroup = pyform.RadioGroup(key, bool(config[key]))
-            radiogroup.add_button(pyform.RadioButton("False", u'否', pos=(col, row), text_color=(120, 20, 120)))
-            radiogroup.add_button(pyform.RadioButton("True", u'是', pos=(col + 120, row), text_color=(120, 20, 120)))
-            form.add_form_object(radiogroup)
-        elif fun_name == 'option':
-            radiogroup = pyform.RadioGroup(key, fun_args.index(current) if current in fun_args else 0)
-            for option in fun_args:
-                btn = pyform.RadioButton(option, textwrap.shorten(option, width=15), pos=(col, row), text_color=(120, 20, 120))
-                radiogroup.add_button(btn)
-                col += btn._label_focus_area.w + 40
-            form.add_form_object(radiogroup)
-
-    form.on_change = validate(form)
-    # create the pg clock
-    clock = pg.time.Clock()
-
-    while True:
-        clock.tick(30)
-
-        # events for the inputs
-        events = pg.event.get()
-
-        # process other events
-        for event in events:
-            if event.type == QUIT:
-                return
-            if event.type == pg.VIDEORESIZE:
-                screen = pg.display.set_mode(event.size, pg.RESIZABLE)
-            if event.type == KEYDOWN:
-                if event.key == K_RETURN:
-                    config.write()
-                elif event.key == K_ESCAPE:
-                    return
-
-        screen.fill((255, 255, 255))
-
-        # update the form
-        form.update(events)
-        form.draw(screen)
-
-        pg.display.flip()
+            break
+        elif event in int_keys and values[event]:
+            try:
+                int(values[event])
+            except Exception:
+                window[event].update(values[event][:-1])
+    window.close()
 
 
 if __name__ == '__main__':
