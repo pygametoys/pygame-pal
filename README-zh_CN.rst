@@ -22,7 +22,6 @@ ___________
 	| configobj
 	| attrs
 	| wcwidth
-	| wrapt
 	| pyaudio (播放音效及rix音乐)
 	| mido (播放midi)
 

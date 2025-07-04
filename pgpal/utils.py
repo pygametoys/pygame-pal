@@ -2,8 +2,8 @@
 # -*- coding: utf8 -*-
 import struct
 from operator import itemgetter
+
 import attr
-import wrapt
 
 
 def hashable(obj):
@@ -279,11 +279,9 @@ def pal_xy_offset(pos, x, y):
     vector = pal_x(pos) + x + (pal_y(pos) + y) * 1j
     return int(vector.real), int(vector.imag)
 
-
 def static_vars(**func_dict):
-    @wrapt.decorator
-    def wrapper(wrapped, instance, args, kwargs):
+    def decorator(wrapped):
         if not set(wrapped.__dict__) & set(func_dict):
             wrapped.__dict__.update(func_dict)
-        return wrapped(*args, **kwargs)
-    return wrapper
+        return wrapped
+    return decorator

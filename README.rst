@@ -22,7 +22,6 @@ ___________
 	| configobj
 	| attrs
 	| wcwidth
-	| wrapt
 	| pyaudio (for rix music & sound effect playback)
 	| mido (for midi music playback)
 
