@@ -1,4 +1,4 @@
-pygame >= 1.9.2
+pygame-ce >= 2.1.3
 attrs
 configobj
 charset-normalizer

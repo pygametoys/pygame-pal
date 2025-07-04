@@ -13,11 +13,11 @@ sdlpal项目(http://github.com/sdlpal/sdlpal)，
 
 以及 huangcd 所做的工作(http://github.com/huangcd/python-pal)。
 
-支持CPython 3.10以上的版本，在 Manjaro Linux 17.1 和 Windows 7 64bit 系统中测试通过。
+支持CPython 3.10以上的版本，在 Manjaro Linux 17.1 和 Windows 10 64bit 系统中测试通过。
 
 基础依赖：
 ___________
-	| pygame (基于 sdl 2.x)
+	| pygame-ce (基于 sdl 2.x)
 	| charset-normalizer
 	| configobj
 	| attrs

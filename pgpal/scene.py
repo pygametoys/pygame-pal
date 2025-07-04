@@ -19,7 +19,7 @@ class SceneLoaderMixin(object):
     def __init__(self):
         self.viewport = 0, 0
         self.maps = MAP()
-        self.sprite_to_draw = pg.sprite.OrderedUpdates()
+        self.sprite_to_draw = pg.sprite.RenderUpdates()
 
     def add_sprite_to_draw(self, sprite_frame, pos, layer):
         assert len(self.sprite_to_draw) < MAX_SPRITE_TO_DRAW
@@ -174,7 +174,7 @@ class SceneLoaderMixin(object):
                 evt_obj.layer * 8 + 2
             )
             self.calc_cover_tiles(self.sprite_to_draw.sprites()[-1])
-        self.sprite_to_draw._spritelist.sort(key=lambda sprite: pal_y(sprite.pos))
+        self.sprite_to_draw.sprites().sort(key=lambda sprite: pal_y(sprite.pos))
         for p in self.sprite_to_draw:
             x = pal_x(p.pos)
             y = pal_y(p.pos) - p.frame.height - p.layer

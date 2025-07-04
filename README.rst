@@ -13,11 +13,11 @@ the sdlpal project(http://github.com/sdlpal/sdlpal),
 
 and huangcd's work(http://github.com/huangcd/python-pal).
 
-CPython 3.10+ versions are both supported(however, python3 is recommended), tested on Manjaro Linux 17.1 and Windows 7, 64bit.
+CPython 3.10+ versions are both supported(however, python3 is recommended), tested on Manjaro Linux 17.1 and Windows 10, 64bit.
 
 Dependency:
 ___________
-	| pygame (based on sdl 2.x)
+	| pygame-ce (based on sdl 2.x)
 	| charset-normalizer
 	| configobj
 	| attrs
