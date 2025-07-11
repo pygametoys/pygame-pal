@@ -11,7 +11,6 @@ from io import BytesIO
 
 import charset_normalizer
 from configobj import ConfigObj
-from pygame import freetype
 
 import pygame as pg
 from pgpal.compat import wcwidth, open_ignore_case as open
@@ -71,8 +70,8 @@ if config['use_embedded_font']:
         font_data = bytearray(f.read())
 
 if not (config['use_embedded_font'] and config['use_iso_font']):
-    freetype.init()
-    unicode_font = freetype.Font(config['font_file'], 16)
+    pg.font.init()
+    unicode_font = pg.font.Font(config['font_file'], 16)
 
 
 def get_char_width(o):
@@ -560,7 +559,8 @@ class TextPrinterMixin(object):
                         dx += 1
                     y += (i & 1)
                 return
-        surf, rect = unicode_font.render(char)
+        surf = unicode_font.render(char, False, "white")
+        rect = surf.get_rect()
         if use_8x8_font:
             rect.y += rect.y % 2
             rect.y //= 2
@@ -572,7 +572,8 @@ class TextPrinterMixin(object):
         if use_8x8_font:
             y += 5 - rect.y
         else:
-            y += 12 - rect.y
+            y -= 2
+        #     y += 12 - rect.y
         for i in range(rect.w):
             for j in range(rect.h):
                 has_color = pxarray[i, j]
