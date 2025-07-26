@@ -4,6 +4,9 @@ import struct
 from operator import itemgetter
 
 import attr
+import numpy as np
+
+from pgpal import config
 
 
 def hashable(obj):
@@ -285,3 +288,8 @@ def static_vars(**func_dict):
             wrapped.__dict__.update(func_dict)
         return wrapped
     return decorator
+
+
+def adjust_pcm_volume(data: np.array):
+    ori_dtype = data.dtype
+    return (data * (config['volume'] / 100.0)).astype(ori_dtype)

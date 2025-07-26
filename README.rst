@@ -28,7 +28,7 @@ ___________
 Optional requirements:
 ______________________
 	| pyopl (based on dosbox opl synth, for opl music emulation. If you are using python 3.x, use this branch instead: https://github.com/pygametoys/pyopl/tree/pyopl-py3)
-	| pyav (based on ffmpeg, for avi video playback)
+	| decord (based on ffmpeg, for avi video playback)
 	| ptpython (for a better repl)
 
 Development requirements:

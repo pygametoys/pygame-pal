@@ -12,15 +12,9 @@ import pyopl
 
 from pgpal import config
 from pgpal.mkfext import RIX
+from pgpal.utils import adjust_pcm_volume
 
 __all__ = ['Rix']
-
-
-def adjust_pcm_volume(data: np.array):
-    new_data = data * (config['volume'] / 100.0)
-    high = 2 ** (sample_size * 8 - 1) - 1
-    low = -high - 1
-    return new_data.clip(low, high).astype(f"int{sample_size * 8}")
 
 
 class ADDT:

@@ -1,13 +1,11 @@
 #! /bin/env python
 import os
-from io import BytesIO
-import wave
 
 from pgpal import config
 import pygame as pg
 from pgpal.const import *
 from pgpal.mkfext import RNG
-from pgpal.text import encoding
+from pgpal.utils import adjust_pcm_volume
 
 
 class MoviePlayerMixin(object):
@@ -33,7 +31,27 @@ class MoviePlayerMixin(object):
 
     def play_video(self, avi_file):
         try:
-            import av
+            import numpy as np
+            import sounddevice as sd
+            from decord import AudioReader, VideoReader
+            from decord import cpu
+
+            class VideoReaderWrapper(VideoReader):
+                """
+                Used to fix a memory leak bug in decord.VideoReader
+                Taken from here.
+                https://github.com/dmlc/decord/issues/208#issuecomment-1157632702
+                """
+                def __init__(self, *args, **kwargs):
+                    super().__init__(*args, **kwargs)
+                    self.seek(0)
+                    
+                    self.path = args[0]
+
+                def __getitem__(self, key):
+                    frames = super().__getitem__(key)
+                    self.seek(0)
+                    return frames
         except ImportError:
             return False
         if not config['enable_avi_play']:
@@ -45,76 +63,42 @@ class MoviePlayerMixin(object):
                 self.screen_real.get_flags(),
                 32
             )
-            video = av.open(
-                avi_file,
-                metadata_encoding=encoding,
-                metadata_errors='replace'
-            )
-            astream = next(s for s in video.streams if s.type == 'audio')
-            fw = BytesIO()
-            wav = wave.open(fw, 'wb')
-            resampler = av.AudioResampler(
-                format=av.AudioFormat('s16').packed,
-                layout='stereo',
-                rate=config['samplerate'],
-            )
-            wav.setparams(
-                (2, 2, config['samplerate'], 0, 'NONE', "not compressed")
-            )
-            for packet in video.demux(astream):
-                for frame in packet.decode():
-                    for resampled_frame in resampler.resample(frame):
-                        wav.writeframes(bytes(resampled_frame.planes[0]))
-            wav.close()
-            fw.seek(0)
-            pg.mixer.music.load(fw)
-
-            video = av.open(
-                avi_file,
-                metadata_encoding=encoding,
-                metadata_errors='replace'
-            )
-            vstream = next(s for s in video.streams if s.type == 'video')
-            rate = int(round(1000 / vstream.average_rate))
-            pg.mixer.music.play()
-            self.clear_key_state()
-            other = not hasattr(pg.image, 'frombuffer')
-
+            ctx = cpu(0)
+            audio_reader = AudioReader(avi_file, ctx, sample_rate=44100, mono=True)
+            audio_reader.add_padding()
+            video_reader = VideoReaderWrapper(avi_file, ctx)
+            frame_count = len(video_reader)
             try:
-                for packet in video.demux(vstream):
-                    for frame in packet.decode():
-                        size = self.screen_real.get_size()
+                with sd.OutputStream(
+                    samplerate=audio_reader.sample_rate,
+                    channels=audio_reader.shape[0],
+                ) as output:
+                    prev_audio_end_idx = 0
+                    for i in range(frame_count):
                         curtime = pg.time.get_ticks()
-                        if other:
-                            img_obj = BytesIO()
-                            frame.to_image().save(img_obj, 'bmp')
-                            img_obj.seek(0)
-                            self.screen_real.blit(
-                                pg.transform.smoothscale(
-                                    pg.image.load(img_obj), size),
-                                (0, 0)
-                            )
-                        else:
-                            data = bytes(frame.to_rgb().planes[0])
-                            self.screen_real.blit(
-                                pg.transform.smoothscale(
-                                    pg.image.frombuffer(
-                                        data,
-                                        (288, 180), 'RGB'
-                                    ), size
-                                ), (0, 0)
-                            )
+                        frame_start_time, frame_end_time = video_reader.get_frame_timestamp(i)
+                        frame = video_reader[i].asnumpy()
+                        size = self.screen_real.get_size()
+                        audio_end_idx = audio_reader._time_to_sample(frame_end_time)
+                        audio = audio_reader[prev_audio_end_idx:audio_end_idx].asnumpy().T
+                        output.write(adjust_pcm_volume(audio))
+                        self.screen_real.blit(
+                            pg.transform.smoothscale(
+                                pg.image.frombuffer(
+                                    frame,
+                                    (frame.shape[1], frame.shape[0]), 'RGB'
+                                ), size
+                            ), (0, 0)
+                        )
                         pg.display.flip()
-
-                        self.delay_until(curtime + rate)
+                        self.delay_until(curtime + int((frame_end_time - frame_start_time) * 1000))
                         if self.input_state.key_press:
                             raise KeyboardInterrupt
+                        prev_audio_end_idx = audio_end_idx
             except KeyboardInterrupt:
                 pass
             finally:
                 self.clear_key_state()
-                if pg.mixer.get_init():
-                    pg.mixer.music.pause()
 
             self.screen_real = pg.display.set_mode(
                 self.screen_real.get_size(),

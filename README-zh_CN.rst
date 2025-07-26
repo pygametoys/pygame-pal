@@ -28,7 +28,7 @@ ___________
 可选依赖：
 ______________________
 	| pyopl (基于dosbox的opl合成器, 用来模拟播放opl音乐. 如果是python3版本, 请使用此分支: https://github.com/pygametoys/pyopl/tree/pyopl-py3)
-	| pyav (基于ffmpeg, 播放win95版的avi视频)
+	| decord (基于ffmpeg, 播放win95版的avi视频)
 	| ptpython (更智能的控制台)
 
 开发依赖：
