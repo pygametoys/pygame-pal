@@ -1,10 +1,6 @@
-from __future__ import (
-    division,
-    absolute_import,
-    print_function,
-    unicode_literals
-)
 import os
+import platform
+from subprocess import call
 
 try:
     import cwcwidth as wcwidth  # noqa: F401
@@ -32,7 +28,6 @@ def open_ignore_case(filepath, *args, **kwargs):
 
 def error_box(message):
     title = 'Fatal error'
-    import platform
     system = platform.system()
     try:
         if system == 'Windows':
@@ -40,14 +35,12 @@ def error_box(message):
             MB_OK = 0
             from ctypes import windll
             windll.user32.MessageBoxW(0, message, title, MB_OK | MB_ICONERROR)
+        elif system == 'Linux':
+            call(['zenity', '--error', '--title', repr(title), '--text', repr(message)])
+        elif system == 'Darwin':
+            call(['/Applications/CocoaDialog.app/Contents/MacOS/CocoaDialog', 'ok-msgbox', '--icon', 'x', '--title', repr(title), '--text', repr(message)])
         else:
-            from subprocess import call
-            if system == 'Linux':
-                call(['zenity', '--error', '--title', repr(title), '--text', repr(message)])
-            elif system == 'Darwin':
-                call(['/Applications/CocoaDialog.app/Contents/MacOS/CocoaDialog', 'ok-msgbox', '--icon', 'x', '--title', repr(title), '--text', repr(message)])
-            else:
-                raise Exception()
-    except Exception:
+            raise RuntimeError(f'unsupported platform: {system}')
+    except (ImportError, OSError, RuntimeError):
         import logging
         logging.error(message)

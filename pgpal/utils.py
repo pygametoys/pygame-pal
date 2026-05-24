@@ -8,6 +8,8 @@ import numpy as np
 
 from pgpal import config
 
+_C_INTEGER_FORMATS = 'bBhHiIlLqQ'
+
 
 def hashable(obj):
     return hasattr(obj, '__hash__') and hasattr(obj, '__eq__') and (
@@ -66,16 +68,10 @@ class StructField(object):
         try:
             struct.pack_into(self.format, instance._buffer, self.offset, val)
         except struct.error as e:
-            if len(self.format) == 1 and self.format in 'bBhHiIlLqQ':
+            if len(self.format) == 1 and self.format in _C_INTEGER_FORMATS:
                 _struct = struct.Struct(self.format)
-                size = _struct.size
-                base = int(b'0x' + size * b'ff', 16)
-                if self.format.islower():
-                    base = (base + 1) // 2
-                    val = (val % base) - (val & base)
-                else:
-                    val = val & base
-                _struct.pack_into(instance._buffer, self.offset, val)
+                normalized = normalize_c_integer(self.format, val)
+                _struct.pack_into(instance._buffer, self.offset, normalized)
             else:
                 raise e
 
@@ -236,13 +232,22 @@ SHORT = StructField('h', 0)
 
 
 def short(i):
-    i = int(i)
-    return (i % 0x8000) - (i & 0x8000)
+    return normalize_c_integer('h', i)
 
 
 def byte(i):
-    i = int(i)
-    return (i % 0x80) - (i & 0x80)
+    return normalize_c_integer('b', i)
+
+
+def normalize_c_integer(format_name, value):
+    value = int(value)
+    _struct = struct.Struct(format_name)
+    size = _struct.size
+    base = int(b'0x' + size * b'ff', 16)
+    if format_name.islower():
+        sign_bit = (base + 1) // 2
+        return (value % sign_bit) - (value & sign_bit)
+    return value & base
 
 
 class ObjectMeta(type):

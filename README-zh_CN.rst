@@ -4,7 +4,7 @@ PyGame-Pal
 
 .. image:: https://img.shields.io/badge/license-GPLv3-red.svg
 .. image:: https://img.shields.io/badge/language-python-blue.svg
-.. image:: https://img.shields.io/badge/python-2%20%7C%203-lightblue.svg
+.. image:: https://img.shields.io/badge/python-3.10%2B-lightblue.svg
 .. image:: https://img.shields.io/badge/platform-windows%20%7C%20linux%20%7C%20osx-purple.svg
 
 一个基于pygame的对中国经典角色扮演游戏—— `仙剑奇侠传 <https://zh.wikipedia.org/wiki/%E4%BB%99%E5%89%91%E5%A5%87%E4%BE%A0%E4%BC%A0/>`_ 的开源重新实现。它在很大程度上参考了仙剑研究文档(http://github.com/palxex/palresearch)，
@@ -13,7 +13,7 @@ sdlpal项目(http://github.com/sdlpal/sdlpal)，
 
 以及 huangcd 所做的工作(http://github.com/huangcd/python-pal)。
 
-支持CPython 3.10以上的版本，在 Manjaro Linux 17.1 和 Windows 10 64bit 系统中测试通过。
+支持 CPython 3.10 及以上版本，在 Manjaro Linux 17.1 和 Windows 10 64bit 系统中测试通过。
 
 基础依赖：
 ___________
@@ -28,12 +28,20 @@ ___________
 可选依赖：
 ______________________
 	| pyopl (基于dosbox的opl合成器, 用来模拟播放opl音乐. 如果是python3版本, 请使用此分支: https://github.com/pygametoys/pyopl/tree/pyopl-py3)
+	| supriya-midi (用于 MIDI 输出的 mido 后端)
 	| decord (基于ffmpeg, 播放win95版的avi视频)
 	| ptpython (更智能的控制台)
 
 开发依赖：
 _________________________
 	| cython (编译c扩展版本yj1/yj2解压模块)
+	| pytest
+	| ruff
+
+入口命令：
+________
+	| `pygame-pal`
+	| `pygame-pal-config`
 
 特性：
 _________

@@ -287,15 +287,6 @@ wheels = [
 ]
 
 [[package]]
-name = "construct"
-version = "2.10.70"
-source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple/" }
-sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/02/77/8c84b98eca70d245a2a956452f21d57930d22ab88cbeed9290ca630cf03f/construct-2.10.70.tar.gz", hash = "sha256:4d2472f9684731e58cc9c56c463be63baa1447d674e0d66aeb5627b22f512c29", size = 86337, upload-time = "2023-11-29T08:44:49.545Z" }
-wheels = [
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/b2/fb/08b3f4bf05da99aba8ffea52a558758def16e8516bc75ca94ff73587e7d3/construct-2.10.70-py3-none-any.whl", hash = "sha256:c80be81ef595a1a821ec69dc16099550ed22197615f4320b57cc9ce2a672cb30", size = 63020, upload-time = "2023-11-29T08:44:46.876Z" },
-]
-
-[[package]]
 name = "cython"
 version = "3.2.5"
 source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple/" }
@@ -696,7 +687,6 @@ dependencies = [
     { name = "attrs" },
     { name = "charset-normalizer" },
     { name = "configobj" },
-    { name = "construct" },
     { name = "freesimplegui" },
     { name = "mido" },
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple/" }, marker = "python_full_version < '3.11'" },
@@ -732,7 +722,6 @@ requires-dist = [
     { name = "attrs", specifier = ">=26.1.0" },
     { name = "charset-normalizer", specifier = ">=3.4.7" },
     { name = "configobj", specifier = ">=5.0.9" },
-    { name = "construct", specifier = ">=2.10.70" },
     { name = "cython", marker = "extra == 'decompress'" },
     { name = "decord", marker = "sys_platform == 'win32' and extra == 'video'" },
     { name = "decord2", marker = "sys_platform != 'win32' and extra == 'video'" },

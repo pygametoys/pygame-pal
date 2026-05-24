@@ -4,7 +4,7 @@ PyGame-Pal
 
 .. image:: https://img.shields.io/badge/license-GPLv3-red.svg
 .. image:: https://img.shields.io/badge/language-python-blue.svg
-.. image:: https://img.shields.io/badge/python-2%20%7C%203-lightblue.svg
+.. image:: https://img.shields.io/badge/python-3.10%2B-lightblue.svg
 .. image:: https://img.shields.io/badge/platform-windows%20%7C%20linux%20%7C%20osx-purple.svg
 
 A pygame-based open-source re-implemention of the classic Chinese RPG game `Chinese Paladin(仙剑奇侠传) <https://zh.wikipedia.org/wiki/%E4%BB%99%E5%89%91%E5%A5%87%E4%BE%A0%E4%BC%A0/>`_ .It is heavily based on the palresearch documents(http://github.com/palxex/palresearch),
@@ -13,7 +13,7 @@ the sdlpal project(http://github.com/sdlpal/sdlpal),
 
 and huangcd's work(http://github.com/huangcd/python-pal).
 
-CPython 3.10+ versions are both supported(however, python3 is recommended), tested on Manjaro Linux 17.1 and Windows 10, 64bit.
+CPython 3.10+ is supported, tested on Manjaro Linux 17.1 and Windows 10, 64bit.
 
 Dependency:
 ___________
@@ -28,12 +28,20 @@ ___________
 Optional requirements:
 ______________________
 	| pyopl (based on dosbox opl synth, for opl music emulation. If you are using python 3.x, use this branch instead: https://github.com/pygametoys/pyopl/tree/pyopl-py3)
+	| supriya-midi (mido backend for midi output)
 	| decord (based on ffmpeg, for avi video playback)
 	| ptpython (for a better repl)
 
 Development requirements:
 _________________________
 	| cython (to build the c version yj1 decompress backend)
+	| pytest
+	| ruff
+
+Entry points:
+_____________
+	| `pygame-pal`
+	| `pygame-pal-config`
 
 Features:
 _________
