@@ -1,7 +1,11 @@
 #! /usr/bin/env python
 # -*- coding: utf8 -*-
+import traceback
 from random import randrange
-from pgpal.game import *
+
+import pygame as pg
+
+from pgpal import initialize_runtime
 
 class Crane(pg.sprite.DirtySprite):
 
@@ -25,6 +29,8 @@ class Crane(pg.sprite.DirtySprite):
 
 
 def run():
+    from pgpal.game import ChinesePaladin, error_box
+
     try:
         game = ChinesePaladin()
         trademark_screen(game)
@@ -36,6 +42,8 @@ def run():
         error_box(traceback.format_exc())
 
 def trademark_screen(game):
+    from pgpal.const import NUM_RIX_TITLE
+
     if game.play_video('1.AVI'):
         return
     game.set_palette(3)
@@ -45,6 +53,16 @@ def trademark_screen(game):
 
 
 def splash_screen(game):
+    from pgpal import config
+    from pgpal.const import (
+        BITMAPNUM_SPLASH_DOWN,
+        BITMAPNUM_SPLASH_UP,
+        Key,
+        NUM_RIX_TITLE,
+        SPRITENUM_SPLASH_CRANE,
+        SPRITENUM_SPLASH_TITLE,
+    )
+
     if game.play_video('2.AVI'):
         return
     palette = game.get_palette(1, False)
@@ -131,6 +149,8 @@ def splash_screen(game):
 
 
 def main_game(game):
+    from pgpal.const import FRAME_TIME
+
     game.cur_save_slot = game.opening_menu()
     game.init_game_data(game.cur_save_slot)
     ticks = pg.time.get_ticks()
@@ -146,6 +166,7 @@ def main_game(game):
 
 
 def main():
+    initialize_runtime()
     pg.init()
     pg.mixer.init()
     run()

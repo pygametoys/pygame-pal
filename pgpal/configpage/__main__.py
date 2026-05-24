@@ -1,6 +1,6 @@
 # coding: utf-8
 import mido
-from pgpal import configspec, config, vdt
+from pgpal import configspec, config, initialize_runtime, vdt
 
 import FreeSimpleGUI as sg
 
@@ -42,6 +42,7 @@ def translate(key):
     return ''.join(translations.get(word, word.capitalize()) for word in key.split('_'))
 
 def main():
+    initialize_runtime()
     layout = []
     int_keys = []
     for key, spec in configspec.items():

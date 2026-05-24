@@ -137,12 +137,12 @@ class RLEDecoder(object):
 class RIX(MKFDecoder):
 
     def __init__(self):
-        super(RIX, self).__init__('mus.mkf', yj1=False)
+        super().__init__('mus.mkf', yj1=False)
 
 
 class SSS(MKFDecoder):
     def __init__(self):
-        super(SSS, self).__init__('sss.mkf', yj1=False)
+        super().__init__('sss.mkf', yj1=False)
 
 
 class SubPlace(MKFDecoder):
@@ -224,7 +224,7 @@ class GOPS(GOPLike):
     """
 
     def __init__(self):
-        super(GOPS, self).__init__('gop.mkf')
+        super().__init__('gop.mkf')
 
 
 class Ball(SubPlace):
@@ -254,7 +254,7 @@ class Fire(GOPLike):
     """
 
     def __init__(self):
-        super(Fire, self).__init__('fire.mkf')
+        super().__init__('fire.mkf')
 
 
 class F(GOPLike):
@@ -264,7 +264,7 @@ class F(GOPLike):
     """
 
     def __init__(self):
-        super(F, self).__init__('f.mkf')
+        super().__init__('f.mkf')
 
 
 class ABC(GOPLike):
@@ -274,7 +274,7 @@ class ABC(GOPLike):
     """
 
     def __init__(self):
-        super(ABC, self).__init__('abc.mkf')
+        super().__init__('abc.mkf')
 
 
 class MGO(GOPLike):
@@ -284,12 +284,12 @@ class MGO(GOPLike):
     """
 
     def __init__(self):
-        super(MGO, self).__init__('mgo.mkf')
+        super().__init__('mgo.mkf')
 
 
 class Data(MKFDecoder):
     def __init__(self):
-        super(Data, self).__init__('data.mkf', yj1=False)
+        super().__init__('data.mkf', yj1=False)
 
 
 class FBP(MKFDecoder):
@@ -301,7 +301,7 @@ class FBP(MKFDecoder):
     """
 
     def __init__(self):
-        super(FBP, self).__init__('fbp.mkf')
+        super().__init__('fbp.mkf')
 
     def render(self, index, surface):
         width, height = 320, 200
@@ -340,7 +340,7 @@ class RNG(MKFDecoder):
     """
 
     def __init__(self):
-        super(RNG, self).__init__('rng.mkf', yj1=False)
+        super().__init__('rng.mkf', yj1=False)
 
     def start_video(self, index, surface):
         """
@@ -476,7 +476,7 @@ class MAP(MKFDecoder):
     """
     def __init__(self):
         self.index = -1
-        super(MAP, self).__init__('map.mkf')
+        super().__init__('map.mkf')
 
     def load(self, index, gop):
         if self.index != index:

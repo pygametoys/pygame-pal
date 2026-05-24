@@ -6,10 +6,11 @@ from io import BytesIO
 from functools import partialmethod
 
 import attr
+from pygame.locals import *
 
 from pgpal import config
 import pygame as pg
-from pgpal.const import *
+from pgpal.const import ICON
 from pgpal.mkfbase import is_win95
 from pgpal.utils import pal_x, pal_y
 

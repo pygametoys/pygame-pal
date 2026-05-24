@@ -1,9 +1,12 @@
 # -*- coding: UTF-8 -*-
 import attr
 import datetime
-from pgpal.const import *
+
 import pygame as pg
+from pygame.locals import *
+
 from pgpal import config
+from pgpal.const import Direction, Key, dir_map, keymap
 
 if config['enable_joystick']:
     pg.joystick.init()

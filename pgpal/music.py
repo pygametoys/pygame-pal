@@ -4,20 +4,36 @@ from io import BytesIO
 import os
 from threading import Thread
 import time
+
 import mido
-from pgpal.const import PAL_MAX_VOLUME
 import pygame as pg
-from pgpal.compat import open_ignore_case as open
-from pgpal.mkfbase import MKFDecoder
+
 from pgpal import config
+from pgpal.compat import open_ignore_case as open
+from pgpal.const import PAL_MAX_VOLUME
+from pgpal.mkfbase import MKFDecoder
+
+
+MIDO_BACKENDS = {
+    "supriya": "pgpal.midi_backend_supriya",
+    "rtmidi": "mido.backends.rtmidi",
+    "pygame": "mido.backends.pygame",
+    "portmidi": "mido.backends.portmidi",
+    "amidi": "mido.backends.amidi",
+}
 
 
 class Midi(Thread):
 
     def __init__(self):
         Thread.__init__(self)
-        mido.set_backend('mido.backends.%s' % config['midi_backend'])
+        backend_name = MIDO_BACKENDS.get(
+            config["midi_backend"],
+            f"mido.backends.{config['midi_backend']}",
+        )
+        mido.set_backend(backend_name)
         avail_ports = mido.get_output_names()
+        self.port = None
         if config['midi_port'] and config['midi_port'] in avail_ports:
             self.port = mido.open_output(name=config['midi_port'])
         elif len(avail_ports):
@@ -43,6 +59,8 @@ class Midi(Thread):
                 return False
 
     def play(self, loop=0):
+        if self.port is None:
+            return
         with self.port._lock:
             self.loop = loop
             self.unpause()
@@ -50,12 +68,14 @@ class Midi(Thread):
     def run(self):
         self.n = self.loop = 0
         self.paused = True
+        if self.port is None:
+            return
         while not self.port.closed:
             while not self.paused:
                 with self.port._lock:
                     _id = id(self.midifile)
                     for msg in self.midifile.play():
-                        if hasattr('msg', 'velocity'):
+                        if hasattr(msg, 'velocity'):
                             msg.velocity = msg.velocity * \
                             config['volume'] // PAL_MAX_VOLUME
                         self.port.send(msg)
@@ -73,6 +93,8 @@ class Midi(Thread):
                     time.sleep(0.05)
 
     def pause(self):
+        if self.port is None:
+            return
         self.paused = True
         self.port.panic()
         self.port.reset()
@@ -86,7 +108,8 @@ class Midi(Thread):
 
     def quit(self):
         self.stop()
-        self.port.close()
+        if self.port is not None:
+            self.port.close()
 
 
 class Music(object):

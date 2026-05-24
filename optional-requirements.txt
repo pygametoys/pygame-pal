@@ -1,5 +1,4 @@
-cwcwidth
 decord; sys_platform == 'win32'
 decord2; sys_platform != 'win32'
-python-rtmidi
 ptpython
+supriya-midi

@@ -1,10 +1,45 @@
 # -*- coding: UTF-8 -*-
 from enum import IntEnum
-from pgpal.mkfbase import is_win95
-import pygame as pg
-from pgpal import config
-from pygame.locals import *
 
+import pygame as pg
+from pygame.locals import (
+    K_DOWN,
+    K_END,
+    K_ESCAPE,
+    K_HOME,
+    K_INSERT,
+    K_KP0,
+    K_KP1,
+    K_KP2,
+    K_KP3,
+    K_KP4,
+    K_KP6,
+    K_KP7,
+    K_KP8,
+    K_KP9,
+    K_KP_ENTER,
+    K_LALT,
+    K_LCTRL,
+    K_LEFT,
+    K_PAGEDOWN,
+    K_PAGEUP,
+    K_RALT,
+    K_RETURN,
+    K_RIGHT,
+    K_SPACE,
+    K_UP,
+    K_a,
+    K_d,
+    K_e,
+    K_f,
+    K_q,
+    K_r,
+    K_s,
+    K_w,
+)
+
+from pgpal import config
+from pgpal.mkfbase import is_win95
 
 DRAW_WIDTH = 320
 DRAW_HEIGHT = 200

@@ -7,10 +7,9 @@ from __future__ import (
 import os
 
 try:
-    import cwcwidth as wcwidth
+    import cwcwidth as wcwidth  # noqa: F401
 except ImportError:
-    import wcwidth
-
+    import wcwidth  # noqa: F401
 
 
 from pgpal import config
